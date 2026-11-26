@@ -1,0 +1,59 @@
+---
+// Detalle de cada post. Solo se generan los publicables (no draft/private):
+// antes getStaticPaths generaba tambien los borradores, que no aparecian en
+// los listados (index.astro y blog/index.astro ya filtraban) pero quedaban
+// accesibles por URL directa. Mismo criterio que /llms.txt y /blog/<id>.md
+// (publishedPosts() en src/lib/llms-txt.ts).
+//
+// PR D (llms.txt): cada post declara su version markdown con rel="alternate".
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+import { ecosystemPageTheme } from "../../lib/ecosystem-theme";
+import { isPubliclyPublishable } from "@portaless/deploy-engine/draft-filter";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", ({ id, data }) => isPubliclyPublishable({
+    slug: id,
+    draft: data.draft,
+    visibility: data.private ? "private" : "public",
+  }));
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+import { getSiteProfileConfig } from "../../lib/site-profile.mjs";
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const profile = getSiteProfileConfig(process.env);
+const markdownUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/blog/${post.id}.md`;
+const pageTheme = ecosystemPageTheme();
+---
+<BaseLayout title={`${post.data.title} — Portaless`} description={post.data.description} markdownUrl={markdownUrl} pageTheme={pageTheme}>
+  <article>
+    <h1>{post.data.title}</h1>
+    <p class="badge">{post.data.pubDate.toLocaleDateString(profile.isDemo ? "es-CL" : "en-US")}</p>
+    <Content />
+  </article>
+  {profile.features.projections && (
+    <aside class="projections-link">
+      <p>
+        Este artículo es un <strong>canon</strong>: de él se derivan cinco
+        proyecciones (página, feed, manifiesto, índice y una plataforma externa).
+        <a href={`${import.meta.env.BASE_URL}projections/`}>Véalas aquí →</a>
+      </p>
+    </aside>
+  )}
+</BaseLayout>
+
+<style>
+  .projections-link {
+    margin-top: var(--space-6, 32px);
+    padding-top: var(--space-4, 16px);
+    border-top: 1px solid var(--panel-border, #e4e6c3);
+    color: var(--muted, #6e6653);
+    font-size: 0.9rem;
+  }
+</style>

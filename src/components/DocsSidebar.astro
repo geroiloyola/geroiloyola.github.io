@@ -1,0 +1,114 @@
+---
+// Sidebar de /docs/. Sale de la configuracion explicita (docs-nav.mjs, grupo ->
+// lista ordenada), NUNCA del orden de archivos. Marca el idioma de cada pagina
+// (docs/i18n-design.md) para que nadie se tope con un salto de idioma.
+import { DOC_GROUPS } from "../lib/docs-nav.mjs";
+import type { Locale } from "../lib/i18n";
+
+interface Props {
+  current?: string;
+  locale?: Locale;
+}
+const { current, locale = "en" } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<div class="docs-nav-wrap">
+  <!-- Colapsable SIN JS (patron checkbox): en movil el nav arranca oculto y el
+       label lo abre; en desktop el nav se muestra siempre y el label desaparece.
+       No uso <details> porque su contenido cerrado se oculta con
+       ::details-content (content-visibility), que NO se puede forzar visible
+       por CSS en todos los navegadores. -->
+  <input type="checkbox" id="docs-nav-toggle" class="docs-nav-toggle" />
+  <label for="docs-nav-toggle" class="docs-nav-summary">Documentación</label>
+  <nav class="docs-nav" aria-label="Documentation">
+    {DOC_GROUPS.map((group) => (
+      <div class="docs-nav-group">
+        <h3 class="docs-nav-title">{group.title[locale]}</h3>
+        <ul>
+          {group.docs.map((doc) => (
+            <li>
+              <a
+                href={`${base}docs/${doc.slug}/`}
+                class:list={["docs-nav-link", { "docs-nav-link--current": current === doc.slug }]}
+                aria-current={current === doc.slug ? "page" : undefined}
+              >
+                <span>{doc.title}</span>
+                <span class="docs-lang">{doc.lang}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </nav>
+</div>
+
+<style>
+  .docs-nav-wrap { min-width: 0; margin-bottom: 18px; }
+
+  /* El checkbox esta oculto pero sigue siendo enfocable (teclado). */
+  .docs-nav-toggle { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+  .docs-nav-summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 8px 12px;
+    border: 1px solid var(--panel-border, #2c231a);
+    border-radius: var(--radius-input, 8px);
+    color: var(--text, #f7f7f2);
+  }
+  .docs-nav-toggle:focus-visible + .docs-nav-summary {
+    outline: 2px solid var(--accent, #c5d86d);
+    outline-offset: 2px;
+  }
+
+  /* Movil (default): oculto hasta que el label lo abre. */
+  .docs-nav { display: none; font-size: 0.9rem; margin-top: 14px; }
+  .docs-nav-toggle:checked ~ .docs-nav { display: block; }
+
+  .docs-nav-group { min-width: 0; margin-bottom: 22px; }
+  .docs-nav-title {
+    margin: 0 0 8px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted, #6e6653);
+  }
+  .docs-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .docs-nav-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px 10px;
+    border-radius: var(--radius-input, 8px);
+    color: var(--text, #f7f7f2);
+    text-decoration: none;
+  }
+  .docs-nav-link > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+  .docs-nav-link:hover { background: var(--panel-bg, #171310); }
+  .docs-nav-link--current { background: var(--panel-bg, #171310); border-left: 3px solid var(--accent, #c5d86d); }
+  .docs-lang {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted, #6e6653);
+    border: 1px solid var(--panel-border, #2c231a);
+    border-radius: 999px;
+    padding: 1px 6px;
+  }
+
+  @media (min-width: 761px) {
+    .docs-nav-summary { display: none; }
+    .docs-nav-toggle { display: none; }
+    /* Desktop: el nav se muestra siempre (gana por orden de fuente al default
+       de movil, misma especificidad). */
+    .docs-nav { display: block; margin-top: 0; }
+  }
+</style>

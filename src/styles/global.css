@@ -1,0 +1,642 @@
+/* Phase 0 — visual identity foundation.
+   Un solo punto de verdad para el color: las variables --bg/--text/--accent/
+   etc. (los DesignTokens del skin activo). --portaless-* son ALIAS de esas
+   variables, no valores propios: dashboard, editor y sitio publico leen lo
+   mismo. Los valores por defecto de aqui son la PALETA OFICIAL de Portaless
+   (lima #C5D86D / tinta #261C15 / hueso #F7F7F2 / salvia #E4E6C3), asi un
+   sitio sin skin activo (o en hosting estatico sin /api/site-skin) ya se
+   ve con la marca. El skin activo (o el dark mode) los sobreescribe con la
+   misma cascada de CSS -- sin JS ni !important. */
+
+:root {
+  /* Tokens (tema claro oficial) */
+  --accent: #C5D86D;
+  --accent-text: #5A6B24;
+  --accent-2: #F05D23;
+  --radius: 22px;
+  --density: comfortable;
+  --bg: #F7F7F2;
+  --panel-bg: #FFFFFF;
+  --panel-border: #E4E6C3;
+  --text: #261C15;
+  --muted: #6E6653;
+  --success-bg: #EAF3D4;
+  --success-fg: #4A6B1F;
+  --warning-bg: #FCEBDD;
+  --warning-fg: #A0521B;
+  --danger-bg: #FBE5E3;
+  --danger-fg: #B3372C;
+
+  /* Alias historicos: 216 referencias en src/ ya usan --portaless-*.
+     Apuntan a los tokens; renombrar el token renombra el sitio entero. */
+  --portaless-bg: var(--bg);
+  --portaless-fg: var(--text);
+  --portaless-accent: var(--accent);
+  --portaless-muted: var(--muted);
+  --portaless-border: var(--panel-border);
+
+  /* Step 1 — tipografia por rol (fonts.css, self-hosted):
+     display serif para titulos, sans para cuerpo/UI, mono para datos
+     tecnicos (DIDs, hashes, TXT). */
+  --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Step 2 — sombra y transicion estructurales. El color de la sombra es
+     la TINTA oficial (38,28,21 = #261C15 en RGB), no un gris de SaaS:
+     por eso la sombra parece pertenecer a esta paleta. No varian por skin,
+     por eso viven aca y no en DesignTokens. */
+  --shadow-sm: 0 1px 2px rgba(38, 28, 21, 0.06), 0 1px 1px rgba(38, 28, 21, 0.04);
+  --shadow-md: 0 4px 12px rgba(38, 28, 21, 0.08), 0 2px 4px rgba(38, 28, 21, 0.05);
+  --transition-fast: 150ms ease;
+
+  /* Step 5 — radio por ROL, no un unico valor para todo:
+     botones 8px (rectangulares, nunca pill), inputs 6px; --radius (22px)
+     sigue siendo el radio de tarjetas/paneles. */
+  --radius-button: 8px;
+  --radius-input: 6px;
+  /* pill: el unico radio que NO es una medida de la escala, porque su
+     significacion es "todo lo redondeado". Badge, chip y avatar. */
+  --radius-pill: 999px;
+
+  /* Ritmo: escala de espaciado compartida por todos los atomos.
+     Vive ACA y no en DesignTokens a proposito: un theme pack controla
+     IDENTIDAD (color, radio, densidad), no RITMO, y meterla en
+     DesignTokens obligaria a cada pack a declarar espaciado y romperia la
+     paridad de 16 variables fijada por test (theme-pack.test.ts). Mismo
+     precedente que --radius-button/--radius-input.
+
+     --space-unit es la unica longitud real: el resto se deriva, y un skin
+     compacto la cambia (comfortable 4px / compact 3px) desde
+     applyDesignTokens(). Por eso los atomos emiten var(--space-N, <literal>px):
+     el fallback conserva el valor exacto de hoy si el CSS no cargo, y nunca
+     dependen del orden de carga. */
+  --space-unit: 4px;
+  --space-1: var(--space-unit);
+  --space-2: calc(var(--space-unit) * 2);
+  --space-3: calc(var(--space-unit) * 3);
+  --space-4: calc(var(--space-unit) * 4);
+  --space-5: calc(var(--space-unit) * 6);
+  --space-6: calc(var(--space-unit) * 8);
+  --space-7: calc(var(--space-unit) * 12);
+  --space-8: calc(var(--space-unit) * 16);
+
+  /* Gutter lateral del sitio: respira en movil (5vw) pero no crece sin fin en
+     desktop (tope --space-6 = 24px). Es una COMPOSICION de la escala de
+     espaciado, no un pixel magico: 5vw resuelve a 16px en un movil de 320px
+     (dentro de [--space-3, --space-6]) y a 24px+ en desktop, donde el clamp lo
+     fija. Un solo punto de verdad para .container y el header. */
+  --gutter: clamp(var(--space-3), 5vw, var(--space-6));
+
+  /* Tipografia por ROL: el Hero deja de emitir 2.2rem a mano y el Heading deja
+     de depender de la cascada h1/h2/h3 del tema para decidir su tamano visual.
+     --fs-title es el clamp que hoy aplica a h2. */
+  --fs-display: clamp(2.1rem, 1.5rem + 2.4vw, 3.2rem);
+  --fs-title: clamp(1.45rem, 1.2rem + 0.9vw, 1.9rem);
+  --fs-body: 1rem;
+
+  font-family: var(--font-sans);
+}
+
+/* Escala tipografica editorial: display serif con tracking ligeramente
+   negativo en titulos, sans en cuerpo. Ancho de lectura limitado por
+   .container (860px ~ 80ch a 1rem). */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+h1 { font-size: clamp(1.9rem, 1.4rem + 1.6vw, 2.6rem); }
+h2 { font-size: clamp(1.45rem, 1.2rem + 0.9vw, 1.9rem); }
+h3 { font-size: clamp(1.15rem, 1.05rem + 0.4vw, 1.35rem); }
+
+/* Chrome de herramienta — SIEMPRE la paleta oscura oficial, aunque el tema
+   de la pagina sea claro. Es deliberado (el panel de identidad, los
+   formularios del admin y el editor son la herramienta, no el sitio
+   publicado): ademas es lo que hace que el lima de los acentos tenga
+   contraste -- sobre hueso el lima daria 1.4:1. Mismos valores que el
+   bloque dark de abajo, solo que scoping por elemento en vez de por tema.
+   Si sumas un panel oscuro al admin, anotalo aca. */
+:is(
+  .ai-apw-checklist,
+  .ai-nav-card,
+  .sec-panel,
+  .aa-form,
+  .ep-form,
+  .ep-key-panel,
+  .ep-new-key-panel,
+  .ss-row,
+  .wiz-form,
+  .wiz-provider-card,
+  .wiz-publish-note,
+  .wiz-did-panel,
+  .wiz-key-panel,
+  .wiz-case-panel,
+  .st-source-section,
+  .pc-capability,
+  .ae-shell,
+  .an-form
+) {
+  --bg: #261C15;
+  --panel-bg: #2F241B;
+  --panel-border: #4A3B2E;
+  --text: #F7F7F2;
+  --muted: #B7AC9B;
+  --accent-text: #C5D86D;
+  --success-bg: #2A3318;
+  --success-fg: #A8CC6B;
+  --warning-bg: #3A2A16;
+  --warning-fg: #E0A86B;
+  --danger-bg: #3A1E1A;
+  --danger-fg: #E8968C;
+  color: var(--text);
+
+  /* Los alias historicos se declaran en :root, asi que var() se resuelve
+     ahi y hereda el valor YA calculado (claro). Re-declararlos aca es lo
+     que los hace re-resolver contra los tokens de arriba dentro del panel.
+     --portaless-border no: en el diseno original el hairline de un panel
+     oscuro era el salvia claro, y es justamente el unico par que pasa 3:1. */
+  --portaless-bg: var(--bg);
+  --portaless-fg: var(--text);
+  --portaless-accent: var(--accent);
+  --portaless-muted: var(--muted);
+}
+
+/* Tema oscuro oficial. Se activa por preferencia del SO (auto) o por
+   data-theme="dark" en <html> (toggle explicito). data-theme="light"
+   fuerza el claro aunque el SO este en oscuro. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --accent: #C5D86D;
+    --accent-text: #C5D86D;
+    --accent-2: #F05D23;
+    --bg: #261C15;
+    --panel-bg: #2F241B;
+    --panel-border: #4A3B2E;
+    --text: #F7F7F2;
+    --muted: #B7AC9B;
+    --success-bg: #2A3318;
+    --success-fg: #A8CC6B;
+    --warning-bg: #3A2A16;
+    --warning-fg: #E0A86B;
+    --danger-bg: #3A1E1A;
+    --danger-fg: #E8968C;
+  }
+}
+
+:root[data-theme="dark"] {
+  --accent: #C5D86D;
+  --accent-text: #C5D86D;
+  --accent-2: #F05D23;
+  --bg: #261C15;
+  --panel-bg: #2F241B;
+  --panel-border: #4A3B2E;
+  --text: #F7F7F2;
+  --muted: #B7AC9B;
+  --success-bg: #2A3318;
+  --success-fg: #A8CC6B;
+  --warning-bg: #3A2A16;
+  --warning-fg: #E0A86B;
+  --danger-bg: #3A1E1A;
+  --danger-fg: #E8968C;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Enlaces: --accent-text (no --accent) -- el accent oficial puro no
+   alcanza contraste AA como texto sobre fondo claro. */
+a { color: var(--accent-text); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem var(--gutter);
+}
+
+header.site-header {
+  border-bottom: 1px solid var(--panel-border);
+}
+
+header.site-header .site-header-row {
+  display: flex;
+  align-items: center;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1rem var(--gutter);
+  gap: 1rem;
+  min-width: 0;
+}
+
+header.site-header nav.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+header.site-header .brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+/* Atomic Icons Responsive: el rincon derecho del header. Share siempre
+   (icono iOS); el icono principal lo decide deriveHeaderContext segun el
+   contenido de la pagina (carrito en tiendas, volumen en videos). La
+   zona se empuja a la derecha con margin-left:auto para quedar a la
+   altura de Portaless/Publicaciones. */
+header.site-header .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+}
+
+/* Grupo derecho del header: el selector de idioma va junto a los iconos, no
+   entre las etiquetas del menu. margin-left:auto lo empuja al borde derecho. */
+header.site-header .header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-left: auto;
+}
+
+/* Selector de idioma: pill accionable (icono de idiomas + nombre del otro
+   idioma). Se lee como un control, no como otra entrada del menu. */
+header.site-header .header-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.32rem 0.7rem;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+header.site-header .header-lang:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+header.site-header .header-lang-icon {
+  display: inline-flex;
+}
+
+header.site-header .header-lang-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+header.site-header .header-lang-text {
+  white-space: nowrap;
+}
+
+/* Aviso de idioma (patron Airbnb, honesto): una linea compacta bajo el nav en
+   las paginas que NO tienen version en el otro locale. Discreto, no insistente,
+   y con la entrada del sitio en el otro idioma. */
+header.site-header .header-lang-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 var(--gutter) 0.7rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+header.site-header .header-lang-notice-link {
+  color: var(--accent-text);
+  white-space: nowrap;
+}
+
+/* Navegacion del header: el icono esta en el DOM pero oculto en DESKTOP (solo
+   el texto, como siempre). El texto nunca se quita del DOM, asi el nombre
+   accesible se conserva en los dos modos. Ningun cambio de color/estilo base:
+   en desktop los enlaces siguen siendo los del estilo por defecto. */
+header.site-header .nav-ico {
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* MOVIL: un solo renglón con inventario MVP: marca, publicaciones (si existen),
+   explorar, idioma (si hay versión alternativa) y compartir. TrustScore queda
+   en el footer; acciones contextuales junto al contenido de página. */
+@media (max-width: 640px) {
+  header.site-header .site-header-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.5rem var(--gutter);
+  }
+
+  header.site-header nav.site-nav {
+    flex: 1 1 auto;
+    width: auto;
+    justify-content: space-between;
+    gap: 2px;
+  }
+
+  header.site-header .brand {
+    flex: 0 1 auto;
+    min-width: 44px;
+    font-size: clamp(0.7rem, 3.5vw, 0.88rem);
+  }
+
+  /* Objetivo tactil 44x44 (WCAG 2.5.5): en movil el menu es icon-only, asi que
+     cada entrada es un control tactil y cumple el minimo. flex:0 0 auto impide
+     que el flex lo encoja. */
+  header.site-header .nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    color: var(--text);
+  }
+
+  header.site-header .nav-link:hover {
+    color: var(--accent);
+  }
+
+  header.site-header .nav-link .nav-ico {
+    display: inline-flex;
+  }
+
+  header.site-header .nav-link .nav-ico svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  header.site-header .nav-link .nav-txt {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Optional commerce stays available from the footer on narrow screens. */
+  header.site-header .nav-link-commerce { display: none; }
+
+  header.site-header .header-right {
+    gap: 2px;
+    flex: 0 0 auto;
+    width: auto;
+    justify-content: flex-end;
+    margin-left: 0;
+  }
+
+  header.site-header .header-lang {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  header.site-header .header-lang .header-lang-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+}
+
+header.site-header .header-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+header.site-header .header-icon-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+header.site-header .header-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Estado silenciado del control de volumen: el SVG no cambia, lo marca
+   aria-pressed (conmuta el listener delegado). */
+header.site-header .header-icon-btn[aria-pressed="true"] {
+  opacity: 0.55;
+}
+
+.page-context-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; max-width: 900px; margin: 1.5rem auto; }
+.page-context-actions .page-context-action { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-width: 44px; min-height: 44px; padding: 0.25rem 0.75rem; border: 1px solid var(--panel-border); border-radius: 999px; background: transparent; color: var(--text); cursor: pointer; }
+.page-context-actions .page-context-action svg { width: 18px; height: 18px; flex: 0 0 auto; }
+
+footer.site-footer {
+  border-top: 1px solid var(--panel-border);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Fila 1: ecosistema (TrustScore / Explore / Powered by). Los labels son
+   el producto, asi que pesan mas que la nota legal de abajo: van en
+   --text y con la misma separacion tipografica que linktree. */
+footer.site-footer .footer-eco {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 600;
+}
+
+footer.site-footer .footer-eco a {
+  color: var(--text);
+  /* Objetivo tactil: los enlaces del footer son controles de accion; en movil
+     cumplen el minimo 44x44 (WCAG 2.5.5) centrando el texto. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+footer.site-footer .footer-eco .sep {
+  color: var(--muted);
+}
+
+/* Fila 2: posicion del producto ("Open Source, Modular, Agent-Ready &
+   Zero-Hosting"), texto exacto del usuario. */
+footer.site-footer .footer-note {
+  margin: 0.35rem 0 0;
+}
+
+/* Tarjetas: radio de tarjeta (--radius, 22px) + escalera de sombra de la
+   paleta. El hover eleva 1px UNA sola vez aqui (los productos del sitio
+   son literalmente tarjetas que el usuario elige con el mouse); el resto
+   de la interfaz no gana hover-lifts dispersos. */
+.card {
+  display: block;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  background: var(--panel-bg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.badge {
+  display: inline-block;
+  background: var(--panel-border);
+  color: var(--muted);
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.product-card img {
+  width: 100%;
+  border-radius: 8px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.price {
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.empty-state {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Datos tecnicos (DIDs, hashes, TXT, claves) siempre en la mono de
+   marca: es el rol de --font-mono, no el default del navegador. */
+code, kbd, samp, pre { font-family: var(--font-mono); }
+
+/* Respeta la preferencia del SO de reducir movimiento: el unico hover
+   con transform (.card) y cualquier transicion estructural quedan quietos.
+   Los estados de color/ sombra siguen funcionando -- lo que se apaga es
+   el desplazamiento, no la informacion. */
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+  .card:hover { transform: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Home de Portaless (docs/design/home-redesign.md, ROADMAP fase 13/14). El
+   theme pack "portaless-nocturno" solo puede declarar las 16 variables permitidas;
+   los EFECTOS ambientales viven aqui, bajo [data-theme-pack="portaless-nocturno"],
+   y solo tocan propiedades que los estilos inline de los elementos NO fijan
+   (fondo de body, pseudo-elementos, backdrop-filter, transiciones). Nunca
+   hay !important ni pelea con el render. CSS-only, sin JS, y respeta
+   prefers-reduced-motion (abajo).
+   --------------------------------------------------------------------------- */
+[data-theme-pack="portaless-nocturno"] body {
+  background:
+    radial-gradient(1100px 560px at 50% -8%, rgba(197, 216, 109, 0.10), transparent 60%),
+    radial-gradient(820px 480px at 88% 8%, rgba(240, 93, 35, 0.08), transparent 55%),
+    var(--bg, #0E0B08);
+  background-attachment: fixed;
+}
+
+/* Capa decorativa de puntos (starfield sutil). pointer-events:none: no
+   intercepta clics; se desvanece hacia abajo con mask. */
+[data-theme-pack="portaless-nocturno"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(247, 247, 242, 0.06) 1px, transparent 1px);
+  background-size: 34px 34px;
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent 72%);
+  mask-image: linear-gradient(to bottom, #000, transparent 72%);
+}
+
+[data-theme-pack="portaless-nocturno"] main.container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Titular del hero spotlight con degradado (lima -> naranja). El elemento no
+   fija `color`, asi que la regla no compite con ningun inline. */
+[data-theme-pack="portaless-nocturno"] .ae-hero-spotlight-title {
+  background: linear-gradient(100deg, #F7F7F2 0%, #C5D86D 52%, #F05D23 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+[data-theme-pack="portaless-nocturno"] .ae-icon { color: var(--accent-text, #C5D86D); }
+
+[data-theme-pack="portaless-nocturno"] .ae-feature-card,
+[data-theme-pack="portaless-nocturno"] .ae-post-card {
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+[data-theme-pack="portaless-nocturno"] .ae-feature-card:hover,
+[data-theme-pack="portaless-nocturno"] .ae-post-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme-pack="portaless-nocturno"] .ae-feature-card,
+  [data-theme-pack="portaless-nocturno"] .ae-post-card { transition: none; }
+  [data-theme-pack="portaless-nocturno"] .ae-feature-card:hover,
+  [data-theme-pack="portaless-nocturno"] .ae-post-card:hover { transform: none; }
+}
+
+/* La franja de enlaces reales del home (Columns con un Button por columna):
+   centra cada boton dentro de su columna. No pisa ningun estilo inline (los
+   botones son inline-block; text-align los centra). */
+[data-theme-pack="portaless-nocturno"] .ae-columns .ae-column-slot {
+  text-align: center;
+}

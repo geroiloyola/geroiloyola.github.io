@@ -1,0 +1,30 @@
+{
+  "localeName": "Español",
+  "home": {
+    "otherLocaleName": "English",
+    "otherLocaleAria": "Leer esta página en inglés"
+  },
+  "lang": {
+    "notice": "Esta página solo está disponible en un idioma.",
+    "noticeCta": "Ver el sitio en inglés"
+  },
+  "trust": {
+    "label": "TrustScore",
+    "aria": "TrustScore del sitio"
+  },
+  "nav": {
+    "home": "Inicio",
+    "posts": "Publicaciones",
+    "explore": "Explorar"
+  },
+  "cta": {
+    "start": "Empezá en {{minutes}} minutos"
+  },
+  "footer": {
+    "ecoAria": "Ecosistema Portaless",
+    "trust": "TrustScore",
+    "explore": "Explorar",
+    "poweredBy": "Powered by Portaless",
+    "promise": "Open Source, Modular, Agent-Ready & Zero-Hosting"
+  }
+}

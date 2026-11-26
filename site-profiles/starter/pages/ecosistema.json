@@ -1,0 +1,143 @@
+{
+  "version": "0.1",
+  "slug": "ecosistema",
+  "title": "Ecosistema — Portaless, Verared, Gerarion y Tokenless",
+  "description": "Cómo se conectan Portaless, Verared, Gerarion y Tokenless: propósito, arquitectura y evolución de las cuatro creaciones.",
+  "theme": "portaless-nocturno",
+  "root": [
+    {
+      "id": "eco-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "El ecosistema: cuatro piezas diseñadas para trabajar juntas",
+        "subtitle": "Cada proyecto resuelve una capa concreta sin obligarte a adoptar un monolito. Puedes usar uno solo o combinarlos según lo que necesite tu sitio o tu producto.",
+        "ctaLabel": "Read in English →",
+        "ctaHref": "/pages/en-ecosystem/"
+      }
+    },
+    {
+      "id": "eco-portaless-h",
+      "type": "Heading",
+      "props": {
+        "text": "1. Portaless — Nodo CMS soberano y modular",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Capa de contenido y publicación",
+        "align": "left"
+      }
+    },
+    {
+      "id": "eco-portaless-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "Portaless es un CMS ligero sobre Astro que compila a HTML estático pero incluye un runtime opcional (Node/Docker o Cloudflare Pages + D1) con editor visual (17 Atomic Elements), portada / editable en vivo, CSP estricto sin unsafe-inline, servidor MCP nativo (19 herramientas) y sandbox de plugins con permisos atómicos."
+      }
+    },
+    {
+      "id": "eco-verared-h",
+      "type": "Heading",
+      "props": {
+        "text": "2. Verared — Vera Trust Stack y protocolo para agentes",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Capa de identidad y confianza (Apache-2.0)",
+        "align": "left"
+      }
+    },
+    {
+      "id": "eco-verared-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "Verared separa las primitivas criptográficas y de protocolo en 7 paquetes independientes publicados en npm bajo @verared/* (net, apw, local-trust, reputation, trust-layer, cloud-images e identity-atproto). Permite que cualquier nodo verifique identidad did:apw, firme solicitudes Web Bot Auth y aplique políticas locales de confianza sin depender de una autoridad central."
+      }
+    },
+    {
+      "id": "eco-gerarion-h",
+      "type": "Heading",
+      "props": {
+        "text": "3. Gerarion — [Sección editable]",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "En desarrollo / Documentación abierta",
+        "align": "left"
+      }
+    },
+    {
+      "id": "eco-gerarion-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "[Editable] Reemplaza este párrafo desde site-profiles/starter/pages/ecosistema.json o desde /admin/editor?slug=ecosistema para describir qué problema resuelve Gerarion, para quién está diseñado y cómo se integra con Portaless y Verared."
+      }
+    },
+    {
+      "id": "eco-tokenless-h",
+      "type": "Heading",
+      "props": {
+        "text": "4. Tokenless — [Sección editable]",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "En desarrollo / Documentación abierta",
+        "align": "left"
+      }
+    },
+    {
+      "id": "eco-tokenless-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "[Editable] Reemplaza este párrafo desde site-profiles/starter/pages/ecosistema.json o desde /admin/editor?slug=ecosistema para detallar el propósito, la arquitectura y los casos de uso principales de Tokenless."
+      }
+    },
+    {
+      "id": "eco-connect-h",
+      "type": "Heading",
+      "props": {
+        "text": "Cómo encajan entre sí",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Arquitectura",
+        "align": "left"
+      }
+    },
+    {
+      "id": "eco-connect-grid",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "items": "server :: Fronteras unidireccionales :: Portaless consume @verared/* en versión exacta con integridad sha512, sin importar internals privados.\nshield :: Cero lock-in de hosting :: Puedes empezar en GitHub Pages gratis y pasar a Cloudflare Pages o Docker self-host sin reescribir tu contenido.\npackage :: Portabilidad del contenido :: Todo vive en JSON/Markdown verificables y editables tanto en Git como desde el Editor Visual."
+      }
+    },
+    {
+      "id": "eco-nav",
+      "type": "Columns",
+      "props": { "count": 2, "gap": 16 },
+      "columnSlots": [
+        [
+          {
+            "id": "eco-btn-portaless",
+            "type": "Button",
+            "props": {
+              "label": "Ir a la guía práctica de Portaless",
+              "href": "/pages/portaless/",
+              "variant": "solid",
+              "size": "sm"
+            }
+          }
+        ],
+        [
+          {
+            "id": "eco-btn-home",
+            "type": "Button",
+            "props": {
+              "label": "← Volver al inicio",
+              "href": "/",
+              "variant": "outline",
+              "size": "sm"
+            }
+          }
+        ]
+      ]
+    }
+  ]
+}

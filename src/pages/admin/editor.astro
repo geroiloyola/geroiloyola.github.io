@@ -1,0 +1,392 @@
+---
+// Editor visual de Atomic Elements, integrado al panel de administracion.
+// Requiere sesion valida -- protegido por functions/admin/_middleware.js,
+// que corre para toda ruta bajo /admin/* excepto /admin/login.
+//
+// HALLAZGO que esta pagina resuelve (ver ROADMAP.md, "Funcionalidades
+// Internas en Desarrollo"): public/editor/index.html es una demo standalone
+// con un elementRegistry duplicado y reducido (6 elementos, sin ProductGrid
+// ni los 4 tipos de link-en-bio), sin capa de sesion, sin persistencia real
+// -- solo localStorage. Esta pagina reemplaza esa demo para uso en
+// produccion: hereda BaseLayout (mismo layout del dashboard), usa la
+// validacion de sesion nativa de Astro/Cloudflare Pages, y monta la clase
+// real AtomicElementsEditor (packages/atomic-elements/src/editor/editor-app.ts)
+// con el elementRegistry completo de 12 elementos
+// (packages/atomic-elements/src/elements/registry.ts), no una copia.
+//
+// El slug de la pagina a editar viene por query string (?slug=mi-pagina).
+// Sin slug, se asume "nueva-pagina" como borrador nuevo -- mismo valor por
+// defecto que ya usaba la demo de public/editor/index.html.
+//
+// v0.0.9.28: la pagina (Dashboard) inyecta fetchProductPreview al editor. El
+// paquete atomic-elements no conoce /admin ni sesiones; la llamada a
+// /admin/api/product-preview con la sesion del admin vive aqui.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "@portaless/atomic-elements/editor-styles.css";
+// El canvas renderiza los elementos con el mismo registry: necesita el layout
+// de las grillas del core (ae-columns / ae-product-grid / ae-gallery).
+import "@portaless/atomic-elements/elements.css";
+---
+<BaseLayout title="Editor Visual — Portaless Admin">
+  <div class="pc-page-header">
+    <h1 class="pc-page-title">Editor Visual</h1>
+    <p class="pc-page-subtitle">
+      Arrastra elementos desde la paleta para armar tu página. «Publicar»
+      guarda la página y la deja visible al instante en
+      <code>/pages/&lt;slug&gt;</code> en este nodo (sin rebuild). Para exportar
+      una copia estática a GitHub Pages usa <a href="/admin/publish">Publicar a GitHub Pages</a>.
+    </p>
+  </div>
+
+  <div id="editor-toolbar" class="editor-toolbar">
+    <span id="editor-slug-label" class="editor-slug-label"></span>
+    <div class="editor-toolbar-actions">
+      <label class="editor-canvas-width">
+        <span>Vista</span>
+        <select id="editor-canvas-width" aria-label="Ancho de la vista previa">
+          <option value="desktop">Escritorio</option>
+          <option value="tablet">Tablet</option>
+          <option value="mobile">Móvil</option>
+        </select>
+      </label>
+      <button id="btn-export" class="btn">Exportar JSON</button>
+      <button id="btn-save" class="btn primary">Publicar</button>
+    </div>
+  </div>
+
+  <div id="editor-loading" class="pc-loading">Cargando editor…</div>
+  <div id="editor-load-error" class="pc-load-error" style="display:none;"></div>
+  <div id="editor-save-status" class="editor-save-status" style="display:none;"></div>
+  <div id="editor-root" style="display:none;"></div>
+</BaseLayout>
+
+<style>
+  .editor-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .editor-slug-label {
+    font-size: 12.5px;
+    color: var(--portaless-muted);
+  }
+  .editor-toolbar-actions {
+    display: flex;
+    gap: 8px;
+  }
+  /* Step 6 (una sola momento de movimiento): publicar es el unico estado
+     del sistema que el usuario esta ESPERANDO ver confirmado, asi que
+     ese recibe la entrada; nada mas en la pagina se anima. 200ms fade +
+     scale sutil, y se apaga con prefers-reduced-motion. */
+  @keyframes editor-status-in {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .editor-save-status {
+    font-size: 12.5px;
+    padding: 8px 12px;
+    border-radius: var(--radius-button, 8px);
+    margin-bottom: 12px;
+    animation: editor-status-in 200ms ease both;
+  }
+  .editor-save-status.ok {
+    background: var(--success-bg, #EAF3D4);
+    color: var(--success-fg, #4A6B1F);
+    border: 1px solid var(--panel-border, #E4E6C3);
+  }
+  .editor-save-status.error {
+    background: var(--danger-bg, #FBE5E3);
+    color: var(--danger-fg, #B3372C);
+    border: 1px solid var(--panel-border, #E4E6C3);
+  }
+  .editor-save-status a {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .editor-save-status { animation: none; }
+  }
+</style>
+
+<script>
+  import { mountAtomicElementsEditor } from "@portaless/atomic-elements/editor";
+  import type { ProductPreviewQuery } from "@portaless/atomic-elements/product-preview-loader";
+  import type { PageStore } from "@portaless/atomic-elements/page-store";
+  import type { PageLayout } from "@portaless/atomic-elements/types";
+  import type { ResolvedCatalog } from "@portaless/atomic-elements/element-pack";
+  import { resolveCatalog } from "@portaless/atomic-elements/element-pack";
+  import { elementRegistry, elementPalette } from "@portaless/atomic-elements/registry";
+  import { ROUTES } from "../../lib/routes";
+
+  const loadingEl = document.getElementById("editor-loading")!;
+  const errorEl = document.getElementById("editor-load-error")!;
+  const rootEl = document.getElementById("editor-root")!;
+  const toolbarEl = document.getElementById("editor-toolbar")!;
+  const slugLabelEl = document.getElementById("editor-slug-label")!;
+  const saveStatusEl = document.getElementById("editor-save-status")!;
+  const exportBtn = document.getElementById("btn-export")!;
+  const saveBtn = document.getElementById("btn-save")!;
+
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get("slug") || "nueva-pagina";
+
+  // Implementa la interfaz PageStore real (load/save/list/remove) contra
+  // los endpoints existentes functions/admin/pages/[slug].js e index.js
+  // -- NO contra una ruta /api/ nueva.
+  class HttpPageStore implements PageStore {
+    private revisions = new Map<string, string>();
+
+    async load(pageSlug: string): Promise<PageLayout | null> {
+      const res = await fetch(`/admin/pages/${encodeURIComponent(pageSlug)}`);
+
+      if (res.status === 401) {
+        window.location.href = "/admin/login?error=1";
+        throw new Error("No autenticado.");
+      }
+      if (res.status === 404) return null;
+      if (!res.ok) {
+        throw new Error(`No se pudo cargar la página (HTTP ${res.status}).`);
+      }
+      const revision = res.headers.get("etag")?.replace(/^W\//, "").replace(/^"|"$/g, "");
+      if (revision) this.revisions.set(pageSlug, revision);
+      return res.json();
+    }
+
+    async save(layout: PageLayout) {
+      const res = await fetch(`/admin/pages/${encodeURIComponent(layout.slug)}`, {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+          ...(this.revisions.has(layout.slug)
+            ? { "if-match": `"${this.revisions.get(layout.slug)}"` }
+            : { "if-none-match": "*" }),
+        },
+        body: JSON.stringify(layout),
+      });
+
+      if (res.status === 401) {
+        window.location.href = "/admin/login?error=1";
+        throw new Error("No autenticado.");
+      }
+      if (!res.ok) {
+        let message = `HTTP ${res.status}`;
+        try {
+          const body = await res.json();
+          if (body?.message) message = body.message;
+          else if (body?.error) message = body.error;
+        } catch {
+          // Respuesta sin body JSON -- se usa el mensaje generico de arriba.
+        }
+        throw new Error(message);
+      }
+      const revision = res.headers.get("etag")?.replace(/^W\//, "").replace(/^"|"$/g, "");
+      if (revision) this.revisions.set(layout.slug, revision);
+      return res.json();
+    }
+
+    async list(): Promise<string[]> {
+      const res = await fetch("/admin/api/pages", { credentials: "same-origin" });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.slugs)) return data.slugs;
+      }
+      // El listado es opcional para el editor (no hay UI de selector de
+      // paginas dentro del editor); el page manager vive en /admin/pages.
+      return [];
+    }
+
+    async remove(pageSlug: string): Promise<boolean> {
+      const res = await fetch(`/admin/pages/${encodeURIComponent(pageSlug)}`, { method: "DELETE" });
+      if (res.status === 404) return false;
+      if (!res.ok) throw new Error(`No se pudo eliminar la página (HTTP ${res.status}).`);
+      return true;
+    }
+  }
+
+  // v0.0.9.28: vista previa real del ProductGrid. Ante 401 NO redirige (se
+  // perderian cambios sin guardar a mitad de la edicion): el bloque muestra
+  // el aviso y el admin decide cuando recargar.
+  async function fetchProductPreview({ columns, limit }: ProductPreviewQuery): Promise<string> {
+    const res = await fetch(`/admin/api/product-preview?columns=${columns}&limit=${limit}`, {
+      credentials: "same-origin",
+    });
+    if (res.status === 401) {
+      throw new Error("tu sesión venció. Guarda y recarga la página para volver a iniciar sesión.");
+    }
+    let body: any = {};
+    try {
+      body = await res.json();
+    } catch {
+      // Respuesta sin body JSON.
+    }
+    if (!res.ok) throw new Error(body?.message || body?.error || `HTTP ${res.status}`);
+    if (typeof body?.html !== "string") throw new Error("respuesta inválida del servidor.");
+    return body.html;
+  }
+
+  function defaultHomeLayout(): PageLayout {
+    return {
+      version: "0.1",
+      slug: "home",
+      title: "Inicio",
+      description: "Portada principal del sitio.",
+      status: "draft",
+      root: [
+        {
+          id: "home-hero",
+          type: "Hero",
+          props: {
+            title: "Bienvenido a tu sitio",
+            subtitle: "Edita este titular, agrega tus bloques y publica para actualizar la portada principal (/).",
+            bgColor: "#111827",
+          },
+        },
+        {
+          id: "home-intro",
+          type: "Paragraph",
+          props: {
+            text: "Cuenta en pocas líneas quién eres, qué haces y qué encontrará quien visite tu página.",
+          },
+        },
+        {
+          id: "home-cta",
+          type: "Button",
+          props: {
+            label: "Conocer más",
+            href: "/explore/",
+            variant: "solid",
+          },
+        },
+      ],
+    };
+  }
+
+  function emptyPageLayout(pageSlug: string): PageLayout {
+    if (pageSlug === "home") return defaultHomeLayout();
+    return {
+      version: "0.1",
+      slug: pageSlug,
+      title: "Borrador sin título",
+      description: "",
+      status: "draft",
+      root: [],
+    };
+  }
+
+  // v0.0.9.11: fusiona los element packs instalados (DB, via el endpoint
+  // autenticado) con el core que ya viaja en el bundle. Si el fetch falla
+  // (sin packs, sesión vencida, backend roto), el editor cae al core cerrado
+  // -- nunca se bloquea el editor por esto.
+  async function fetchElementCatalog(): Promise<ResolvedCatalog> {
+    let packs: unknown[] = [];
+    try {
+      const res = await fetch(`/admin/api/element-packs`, { credentials: "same-origin" });
+      if (res.ok) {
+        const body = (await res.json()) as { packs?: unknown[] };
+        packs = Array.isArray(body?.packs) ? body.packs : [];
+      }
+    } catch {
+      packs = [];
+    }
+    return resolveCatalog(elementRegistry, elementPalette, packs as never);
+  }
+
+  function showSaveStatus(kind: "ok" | "error", message: string): void {
+    saveStatusEl.style.display = "";
+    saveStatusEl.className = `editor-save-status ${kind}`;
+    saveStatusEl.textContent = message;
+    window.setTimeout(() => {
+      saveStatusEl.style.display = "none";
+    }, 4000);
+  }
+
+  async function init(): Promise<void> {
+    const store = new HttpPageStore();
+    const isHome = slug === "home";
+    slugLabelEl.textContent = isHome
+      ? "Editando portada principal (/) — publicar actualizará la raíz / en vivo"
+      : `Editando: ${slug}`;
+
+    let initialPage: PageLayout;
+    try {
+      const loaded = await store.load(slug);
+      initialPage = loaded ?? emptyPageLayout(slug);
+    } catch (err) {
+      loadingEl.style.display = "none";
+      errorEl.style.display = "";
+      errorEl.textContent = `Error al cargar el editor: ${(err as Error).message}`;
+      return;
+    }
+
+    loadingEl.style.display = "none";
+    toolbarEl.style.display = "";
+    rootEl.style.display = "";
+    saveBtn.textContent = initialPage.status === "private"
+      ? "Guardar privado"
+      : initialPage.status === "draft"
+        ? "Guardar borrador"
+        : isHome ? "Publicar portada (/)" : "Guardar y publicar";
+
+    // v0.0.9.11: el catalogo (core ∪ packs) se resuelve ANTES de montar, para
+    // que la paleta ya muestre los elementos de pack instalados.
+    const elementCatalog = await fetchElementCatalog();
+
+    const editor = mountAtomicElementsEditor({
+      container: rootEl,
+      store,
+      initialPage,
+      fetchProductPreview,
+      elementCatalog,
+    });
+
+    // Selector de ancho de la vista previa: fija data-canvas-width en el canvas
+    // y las grillas del core (intrinsecas) responden al ancho real. Editar
+    // movil como ciudadano de primera, sin adivinar.
+    const canvasWidthEl = document.getElementById("editor-canvas-width") as HTMLSelectElement | null;
+    const applyCanvasWidth = () => {
+      const canvas = rootEl.querySelector(".ae-canvas");
+      if (canvas && canvasWidthEl) canvas.setAttribute("data-canvas-width", canvasWidthEl.value);
+    };
+    applyCanvasWidth();
+    canvasWidthEl?.addEventListener("change", applyCanvasWidth);
+
+    saveBtn.addEventListener("click", async () => {
+      try {
+        await editor.save();
+        const savedLayout = JSON.parse(editor.exportJSON()) as PageLayout;
+        const isPublic = savedLayout.status === undefined || savedLayout.status === "published";
+        saveStatusEl.style.display = "";
+        saveStatusEl.className = "editor-save-status ok";
+        saveStatusEl.textContent = isPublic
+          ? (isHome ? "Portada principal (/) guardada y publicada. " : "Página guardada y publicada. ")
+          : savedLayout.status === "private" ? "Contenido privado guardado. " : "Borrador guardado. ";
+        const viewLink = document.createElement("a");
+        viewLink.id = isPublic ? "editor-view-public" : "editor-preview-private";
+        viewLink.href = isPublic
+          ? (isHome ? "/" : `${ROUTES.PAGES}/${encodeURIComponent(slug)}`)
+          : `/admin/preview/pages/${encodeURIComponent(slug)}`;
+        viewLink.target = "_blank";
+        viewLink.rel = "noopener noreferrer";
+        viewLink.textContent = isPublic
+          ? (isHome ? "Ver portada pública (/) ↗" : "Ver página pública ↗")
+          : "Vista previa privada ↗";
+        saveStatusEl.appendChild(viewLink);
+        window.setTimeout(() => {
+          saveStatusEl.style.display = "none";
+        }, 12000);
+      } catch (err) {
+        showSaveStatus("error", `Error al guardar: ${(err as Error).message}`);
+      }
+    });
+
+    exportBtn.addEventListener("click", async () => {
+      const json = editor.exportJSON();
+      await navigator.clipboard?.writeText(json);
+      showSaveStatus("ok", "JSON copiado al portapapeles.");
+    });
+  }
+
+  init();
+</script>

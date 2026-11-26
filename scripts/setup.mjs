@@ -1,0 +1,208 @@
+#!/usr/bin/env node
+// Comando unico de instalacion -- v0.0.9.4, tarea 4/4 del roadmap.
+// v0.0.9.27: corregido tras prueba end-to-end real en Node 20.20.1.
+//   - Antes el paso 2/2 imprimia "OK" aunque createUsersStore() hubiera
+//     caido a InMemoryUsersStore en silencio (node:sqlite no disponible):
+//     la tabla users quedaba vacia. Ahora usa SqliteUsersStore.open()
+//     directo (better-sqlite3, falla ruidoso) y VERIFICA con una conexion
+//     independiente que el admin exista en el archivo antes de decir OK.
+//   - El paso 1/2 verifica que las tablas criticas existan tras aplicar
+//     schema.sql (incluye las de OAuth de despliegue, v0.0.9.27).
+// PR B (first-run): applySchema() y REQUIRED_TABLES se exportan para que
+//   server/first-run.mjs reutilice la migracion sin duplicar SQL. main() solo
+//   corre cuando el archivo se ejecuta directamente: importarlo no instala nada.
+// PR #62: auth_mfa_challenges y auth_rate_limits pasan a ser criticas (login
+//   con 2FA y /admin/password-reset/request dependen de ellas).
+//
+//   npm run setup   (usa tsx: este script importa modulos .ts del repo)
+//
+// Variables de entorno:
+//   PORTALESS_SQLITE_PATH     Ruta al archivo SQLite. Default "./portaless.db".
+//   PORTALESS_ADMIN_USERNAME  Usuario admin inicial (default: "admin").
+//   PORTALESS_ADMIN_PASSWORD  Contraseña admin inicial. Si se omite, se
+//                             genera una aleatoria y se imprime UNA sola vez.
+//
+// Este script NO cubre Cloudflare D1 -- usa
+// `wrangler d1 execute --file=schema.sql`.
+
+import { readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join, resolve } from "node:path";
+import { randomBytes } from "node:crypto";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const rootDir = join(__dirname, "..");
+
+export const REQUIRED_TABLES = [
+  "users",
+  "sessions",
+  "auth_mfa_challenges",
+  "auth_rate_limits",
+  "permission_grants",
+  "pages",
+  "page_revisions",
+  "page_revision_evidence",
+  "page_revision_approvals",
+  "site_identity",
+  "capability_bridge_tokens",
+  "webbotauth_nonces",
+  "mcp_agent_tokens",
+  "mcp_audit_events",
+  "site_atproto_links",
+  "cloud_images",
+  "site_skin",
+  "settlement_provider_activations",
+  "deployment_oauth_states",
+  "deployment_credentials",
+  "element_packs",
+  "theme_packs",
+  "community_attestations",
+  "activity_events",
+  "plugin_artifacts",
+  "plugin_artifact_chunks",
+  "plugin_storage",
+  "plugin_email_quota",
+  "publication_runs",
+];
+
+function defaultSqlitePath() {
+  return process.env.PORTALESS_SQLITE_PATH || join(rootDir, "portaless.db");
+}
+
+function generateRandomPassword() {
+  return randomBytes(18).toString("base64url");
+}
+
+async function loadDatabase() {
+  try {
+    return (await import("better-sqlite3")).default;
+  } catch (err) {
+    console.error("\nERROR: better-sqlite3 no esta instalado. Corre: npm install\n");
+    throw err;
+  }
+}
+
+export async function applySchema(sqlitePath = defaultSqlitePath(), { quiet = false } = {}) {
+  if (!quiet) console.log(`\n[1/2] Aplicando schema.sql a ${sqlitePath} ...`);
+  const Database = await loadDatabase();
+
+  const schemaPath = join(rootDir, "schema.sql");
+  if (!existsSync(schemaPath)) {
+    throw new Error(`No se encontro schema.sql en ${schemaPath}. Corre primero: node scripts/generate-schema.mjs`);
+  }
+  const schemaSql = readFileSync(schemaPath, "utf-8");
+
+  const db = new Database(sqlitePath);
+  let tables;
+  try {
+    const existing = Number(
+      db.prepare("SELECT count(*) AS n FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'").get().n,
+    );
+    if (existing === 0) {
+      // El schema maestro es el bootstrap de una base realmente nueva. El
+      // ledger recibe solo el baseline; las versiones posteriores se registran
+      // al aplicar cada delta, en orden y dentro de su propia transaccion.
+      const { MIGRATIONS } = await import("@portaless/persistence-migrations");
+      const { recordAppliedMigration, migrateSqlite } = await import("@portaless/persistence-migrations/runner");
+      db.exec("BEGIN");
+      try {
+        db.exec(schemaSql);
+        recordAppliedMigration(db, MIGRATIONS[0]);
+        db.exec("COMMIT");
+      } catch (err) {
+        db.exec("ROLLBACK");
+        throw err;
+      }
+      db.close();
+      await migrateSqlite(sqlitePath, { skipBackup: true });
+    } else {
+      db.close();
+      // Una base existente nunca recibe el schema actual a ciegas. La ruta de
+      // upgrade lee su ledger, respalda y aplica solo migraciones numeradas.
+      const { migrateSqlite } = await import("@portaless/persistence-migrations/runner");
+      await migrateSqlite(sqlitePath);
+    }
+
+    const check = new Database(sqlitePath, { readonly: true });
+    try {
+      tables = check.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all().map((r) => r.name);
+    } finally {
+      check.close();
+    }
+  } finally {
+    try { db.close(); } catch {}
+  }
+
+  const missing = REQUIRED_TABLES.filter((t) => !tables.includes(t));
+  if (missing.length > 0) {
+    throw new Error(`schema.sql se aplico pero faltan tablas criticas: ${missing.join(", ")}`);
+  }
+  if (!quiet) console.log(`  OK -- ${tables.length} tablas presentes, incluidas las ${REQUIRED_TABLES.length} criticas.`);
+  return tables;
+}
+
+async function createInitialAdmin(sqlitePath, adminUsername, adminPasswordFromEnv) {
+  console.log(`\n[2/2] Creando usuario admin inicial ("${adminUsername}") si no existe ninguno ...`);
+
+  const { SqliteUsersStore } = await import("@portaless/auth/sqlite-users-store");
+  const { ensureInitialAdmin } = await import("@portaless/auth/users-store");
+
+  const usersStore = await SqliteUsersStore.open(sqlitePath);
+  let password = null;
+  try {
+    const existingUsers = await usersStore.listUsers();
+    if (existingUsers.length > 0) {
+      console.log(`  SKIP -- ya existen ${existingUsers.length} usuario(s) registrado(s). No se crea un admin nuevo.`);
+      console.log("  (Si necesitas resetear, usa /admin/password-reset o borra manualmente la tabla 'users'.)");
+      return;
+    }
+    password = adminPasswordFromEnv || generateRandomPassword();
+    await ensureInitialAdmin(usersStore, adminUsername, password);
+  } finally {
+    usersStore.close();
+  }
+
+  const Database = await loadDatabase();
+  const check = new Database(sqlitePath, { readonly: true });
+  const row = check
+    .prepare("SELECT count(*) AS n FROM users WHERE username = ? AND role = 'admin'")
+    .get(adminUsername);
+  check.close();
+  if (!row || row.n !== 1) {
+    throw new Error(
+      `El admin "${adminUsername}" NO quedo persistido en ${sqlitePath} (verificacion independiente). ` +
+        "No se imprime la contraseña porque la cuenta no existe."
+    );
+  }
+
+  console.log(`  OK -- usuario "${adminUsername}" persistido y verificado en ${sqlitePath}.`);
+  if (!adminPasswordFromEnv) {
+    console.log("\n  ================================================================");
+    console.log("  CONTRASEÑA GENERADA (guardala ahora, no se muestra de nuevo):");
+    console.log(`  ${password}`);
+    console.log("  ================================================================\n");
+  }
+}
+
+async function main() {
+  const sqlitePath = defaultSqlitePath();
+  const adminUsername = process.env.PORTALESS_ADMIN_USERNAME || "admin";
+  const adminPasswordFromEnv = process.env.PORTALESS_ADMIN_PASSWORD;
+
+  console.log("Portaless -- instalacion de base de datos + admin inicial (v0.0.9.27)");
+  console.log(`Base de datos SQLite: ${sqlitePath}`);
+
+  await applySchema(sqlitePath);
+  await createInitialAdmin(sqlitePath, adminUsername, adminPasswordFromEnv);
+
+  console.log("\nListo. Ya puedes iniciar sesion en /admin/login.");
+  console.log("Nota: este script cubre SQLite self-hosted. Para Cloudflare D1, ver el");
+  console.log("comentario al inicio de este archivo y de schema.sql en la raiz.\n");
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error("\nFallo la instalacion:", err.message);
+    process.exit(1);
+  });
+}

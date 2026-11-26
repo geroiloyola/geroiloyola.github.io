@@ -1,0 +1,9 @@
+{
+  "skin": "blog",
+  "extends": "base",
+  "tokens": {
+    "accent": "#34c759",
+    "accentText": "#1E7A3E",
+    "accent2": "#30d5c8"
+  }
+}

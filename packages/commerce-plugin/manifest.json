@@ -1,0 +1,14 @@
+{
+  "name": "commerce-plugin",
+  "version": "0.1.0",
+  "entry": "src/plugin-entry.js",
+  "runtime": "javascript",
+  "description": "Cliente de Medusa/Mercur ejecutado dentro del sandbox de Portaless, en vez de directamente en el proceso de build de Astro.",
+  "requestedCapabilities": [
+    {
+      "id": "network:fetch",
+      "allowedHosts": ["__CONFIGURED_MEDUSA_HOST__"],
+      "reason": "Consultar el catalogo de productos y precios de la tienda Medusa/Mercur configurada."
+    }
+  ]
+}

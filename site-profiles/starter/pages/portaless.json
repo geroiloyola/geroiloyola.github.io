@@ -1,0 +1,109 @@
+{
+  "version": "0.1",
+  "slug": "portaless",
+  "title": "Exprime Portaless al máximo — Guía práctica",
+  "description": "Cómo clonar Portaless, editar la portada / visualmente, elegir entre GitHub Pages, Cloudflare Pages o Self-host y aprovechar el CSP estricto sin unsafe-inline.",
+  "theme": "portaless-nocturno",
+  "root": [
+    {
+      "id": "port-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "Exprime Portaless al máximo",
+        "subtitle": "La guía práctica para pasar de clonar el repositorio a tener tu sitio rápido, editable visualmente y protegido con CSP estricto.",
+        "ctaLabel": "Read in English →",
+        "ctaHref": "/pages/en-portaless/"
+      }
+    },
+    {
+      "id": "port-flow-h",
+      "type": "Heading",
+      "props": {
+        "text": "1. De cero a tu sitio en 4 pasos",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Inicio rápido",
+        "align": "left"
+      }
+    },
+    {
+      "id": "port-flow-grid",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "items": "package :: Clona el perfil starter :: Instala con npm ci (Node 24) y compila con npm run build: obtienes un sitio limpio sin contenido de demostración.\nserver :: Edita la portada / visualmente :: En self-host o Cloudflare Pages + D1, entra a /admin/editor?slug=home, personaliza bloques Atomic Elements y publica al instante en /.\nshield :: CSP estricto de fábrica :: Cero scripts inline y cero handlers on*= en los tres runtimes (estático, Cloudflare Pages y Node self-host).\nbot :: Conecta agentes vía MCP :: Expón 19 herramientas con permisos atómicos para que tu IA redacte borradores sin saltarse tus reglas."
+      }
+    },
+    {
+      "id": "port-runtimes-h",
+      "type": "Heading",
+      "props": {
+        "text": "2. Elige el runtime que encaja contigo",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Despliegue",
+        "align": "left"
+      }
+    },
+    {
+      "id": "port-runtimes-faq",
+      "type": "FAQ",
+      "props": {
+        "title": "Comparativa rápida de runtimes",
+        "variant": "bordered",
+        "items": "GitHub Pages (estático, gratis) :: Ideal para hubs personales, portfolios y blogs editados en Git o editados localmente en /admin/editor antes de hacer push. Sirve HTML compilado sin servidor ni base de datos.\nCloudflare Pages + D1 (edge dinámico) :: Ejecuta functions/ con base D1: login, /admin, Editor Visual guardando / y /pages/<slug> al instante, Trust Layer y Gatekeeper. El alta inicial usa npm run setup:d1 -- --remote.\nNode 24 / Docker self-host (nodo completo) :: El runtime de referencia con todo activo: /setup sin terminal, Editor Visual en vivo, publicación integrada a GitHub Pages (/admin/publish), backups SQLite con checksum, servidor MCP y sandbox de plugins."
+      }
+    },
+    {
+      "id": "port-csp-h",
+      "type": "Heading",
+      "props": {
+        "text": "3. Por qué importa el CSP estricto",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Seguridad web",
+        "align": "left"
+      }
+    },
+    {
+      "id": "port-csp-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "Eliminar unsafe-inline de script-src corta de raíz la clase más común de inyección XSS y te obliga a separar limpiamente datos, estilos y módulos externos. Portaless incluye static-sweep.test.ts para garantizar en CI que ningún cambio vuelva a introducir scripts inline."
+      }
+    },
+    {
+      "id": "port-nav",
+      "type": "Columns",
+      "props": { "count": 2, "gap": 16 },
+      "columnSlots": [
+        [
+          {
+            "id": "port-btn-csp-post",
+            "type": "Button",
+            "props": {
+              "label": "Leer artículo sobre CSP estricto",
+              "href": "/blog/csp-sin-unsafe-inline-agentes-ia/",
+              "variant": "solid",
+              "size": "sm"
+            }
+          }
+        ],
+        [
+          {
+            "id": "port-btn-guias",
+            "type": "Button",
+            "props": {
+              "label": "Ver todas las guías",
+              "href": "/pages/guias/",
+              "variant": "outline",
+              "size": "sm"
+            }
+          }
+        ]
+      ]
+    }
+  ]
+}

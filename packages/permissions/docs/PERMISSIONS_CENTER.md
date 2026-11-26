@@ -1,0 +1,116 @@
+# Centro de Permisos de Portaless
+
+Control atómico -- "cosa por cosa" -- de qué puede hacer cada plugin, tema
+o agente de IA dentro de un sitio Portaless, inspirado deliberadamente en
+la pantalla de Privacidad y Seguridad de iOS/Android, no en el modelo
+"todo o nada" de activar/desactivar un plugin completo.
+
+## Principio de diseño
+
+En iOS, no le das "acceso total al teléfono" a una app: le das acceso a
+la Cámara, o a Contactos, o a Ubicación, cada uno por separado, y puedes
+revocar cualquiera sin desinstalar la app. El Centro de Permisos de
+Portaless aplica exactamente esa misma lógica a los plugins: un plugin de
+comercio puede tener concedido `commerce:read` pero **no**
+`network:fetch`, y seguirá funcionando parcialmente (o fallando de forma
+controlada) en vez de tener acceso total o ninguno.
+
+## Cómo se conecta con el sandbox de plugins
+
+Este paquete es la interfaz de administración; `@portaless/plugin-sandbox`
+es quien realmente hace cumplir lo que aquí se configura. El puente es
+`createPermissionResolver()` en `permission-store.ts`, que expone las
+concesiones de este Centro como un `PermissionResolver` que el
+`SandboxRuntime` consulta antes de cada ejecución de un plugin — **la
+concesión del administrador siempre gana sobre lo que el plugin
+solicitó** en su manifiesto.
+
+## Agrupación por riesgo (fase 13, §13.5)
+
+El catálogo sigue teniendo categorías (Contenido, Red, ...), pero la UI ya no
+agrupa por categoría: **agrupa por riesgo**, de alto a bajo, y muestra la
+categoría como etiqueta de cada capacidad. El motivo es de producto: lo que una
+persona necesita ver primero no es si un permiso es "de Red" o "de Comercio",
+sino cuáles de alto riesgo están concedidos. El riesgo ya existía como dato
+(`risk: "bajo" | "medio" | "alto"` en cada capacidad) pero era decorativo: un
+badge por fila. Ahora es la estructura.
+
+- `listCapabilitiesByRisk()` en `capability-registry.ts` (y su espejo en el SDK,
+  verificado por `plugin-sdk-parity.test.ts`) agrupa por riesgo.
+- `RISK_ORDER` fija el orden (`alto`, `medio`, `bajo`) y `RISK_LABELS` la
+  etiqueta humana; la UI itera `RISK_ORDER`, no las claves del objeto.
+- Arriba del Centro hay un resumen por nivel: **concedidas / total**. La unidad
+  es la capacidad (con al menos un grant activo), no el grant: 1 capacidad con 3
+  plugins concedidos cuenta 1.
+- El dashboard (`/admin`) muestra el mismo resumen. El total por nivel sale del
+  catálogo en build; las concedidas se cuentan en el navegador contra
+  `GET /admin/permissions` (el build estático no conoce los grants). Sin nodo
+  con `functions/`, el conteo se muestra como `—` y se dice por qué, en vez de
+  mostrar un cero falso.
+
+## Categorías de permisos (siguen siendo el vocabulario del catálogo)
+
+- **Contenido**: leer/escribir páginas, posts y medios.
+- **Red**: conexión a servicios externos (siempre con hosts explícitos),
+  envío de correo.
+- **Comercio**: lectura de catálogo, inicio de checkout.
+- **Almacenamiento**: lectura/escritura del espacio propio del plugin.
+- **Agentes IA**: lectura del ledger del Trust Layer.
+- **Administración**: cambios de configuración global (la categoría con las
+  capacidades de más alto riesgo, marcadas en rojo por su nivel de riesgo).
+
+## Persistencia real (v0.0.9.2)
+
+`createPermissionStore()` (`store-factory.ts`) elige entre `D1PermissionStore`
+(Cloudflare Pages, binding `env.DB`) y `SqlitePermissionStore` (self-hosted,
+`env.PORTALESS_SQLITE_PATH`), cayendo a `InMemoryPermissionStore` solo si
+ninguno de los dos está disponible. El endpoint server-side
+`functions/admin/permissions/index.js` (GET lee el snapshot completo, PUT
+otorga/revoca un grant puntual) es quien la conecta -- valida sesión y
+aplica `canWrite(role) === "admin"` del lado del servidor, mismo patrón que
+`functions/admin/pages/[slug].js`. La página `src/pages/admin/permissions.astro`
+monta `renderPermissionCenter()` contra ese endpoint via `fetch`, con estado
+de carga, guardado y error visibles.
+
+**Catálogo de subjects dinámico y persistente (v0.0.9.10 + v0.0.9.11)**:
+`functions/admin/permissions/index.js` ya no hardcodea `hello-plugin` ni
+`commerce-plugin` en una constante -- deriva el catálogo llamando a
+`createPluginRegistryStore(env).list(false)`
+(`packages/plugin-sandbox/src/registry/store-factory.ts`), que a su vez usa
+el registro real agregado en el PR #21
+(`packages/plugin-sandbox/src/registry/plugin-registry.ts`). Agregar un
+plugin nuevo ya no requiere editar el endpoint: basta con `register()` en
+el store. Desde v0.0.9.11, ese registro persiste de verdad: el factory
+elige `D1PluginRegistryStore` (Cloudflare, binding `env.DB`) o
+`SqlitePluginRegistryStore` (self-hosted, `env.PORTALESS_SQLITE_PATH`),
+mismo patrón exacto que `createPermissionStore`, usando las tablas
+`plugin_registry`/`plugin_trust_votes` de `schema.sql`. Solo cae a
+`InMemoryPluginRegistryStore` si ninguno de los dos backends está
+configurado -- en ese caso (y solo en ese caso) el registro se resetea al
+seed de `hello-plugin`/`commerce-plugin` en cada reinicio.
+
+## Limitaciones honestas que quedan pendientes
+
+- La UI (`permission-center-ui.ts`) genera DOM directo, sin framework,
+  para poder incrustarse en cualquier panel del dashboard (ver
+  `packages/dashboard`).
+- No hay todavía un registro de auditoría de cambios de permisos más allá
+  del campo `grantedBy`/`grantedAt` por concesión individual (se sobrescribe
+  en cada `setGrant`, no se guarda historial).
+- El Centro de Permisos todavía no muestra el `trustScore` de cada plugin
+  (promedio de votos 1-5 de la comunidad, ya calculado y persistido desde
+  v0.0.9.11) antes de conceder una capacidad -- pendiente de UI, ver
+  `ROADMAP.md`.
+- **Actualización v0.0.9.3**: el bug de binding D1 inconsistente que se
+  había encontrado y documentado aquí (`env.PORTALESS_DB` en
+  `atomic-elements/persistence/store-factory.ts` vs `env.DB` en esta
+  factory) ya se corrigió -- las 4 factories del repo (auth, permissions,
+  trust-layer, atomic-elements) usan ahora `env.DB` de forma consistente.
+  Ver `ROADMAP.md` para el detalle del fix.
+- **Actualización v0.0.9.3**: el Trust Layer / ledger de agentes (la otra
+  mitad de la línea de estado del README) también quedó conectado --
+  resultó que su lado de ESCRITURA ya estaba conectado desde v0.0.6
+  (`functions/_middleware.js` llamaba a `recordAgentAccess` con D1/SQLite
+  reales), solo faltaba un endpoint de LECTURA. Se agregó
+  `functions/.well-known/portaless-usage-log.json.js`. Ver
+  `packages/trust-layer/docs/TRUST_LAYER_SETUP.md` y `ROADMAP.md`.

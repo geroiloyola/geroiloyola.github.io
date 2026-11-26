@@ -1,0 +1,44 @@
+// GET /admin/api/oauth/github/callback -- conexion de la GitHub App para despliegues.
+// Requiere sesion de admin (functions/admin/_middleware.js expone context.data.user).
+//
+// La credencial queda asociada a context.data.user.username. AuthService.validateSession()
+// solo devuelve { username, role }: antes se usaba String(user.id ?? user.email), que
+// siempre valia "undefined" y dejaba todas las credenciales con el mismo dueno.
+
+import { createDeploymentOAuthStore } from "@portaless/deploy-engine/oauth-store";
+import { readGitHubOAuthConfig, completeGitHubOAuth } from "@portaless/deploy-engine/github-oauth";
+import { publicOriginFromEnv } from "../../../../_shared/public-origin.js";
+
+function requireAdmin(context) {
+  // Mismo contrato que el resto de /admin: _middleware.js expone context.data.user.
+  const user = context.data?.user;
+  if (!user) return { error: json({ error: "No autenticado" }, 401) };
+  if (user.role !== "admin") return { error: json({ error: "Solo un admin puede conectar infraestructura" }, 403) };
+  if (typeof user.username !== "string" || !user.username) return { error: json({ error: "Sesion sin usuario" }, 401) };
+  return { user };
+}
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+}
+
+export async function onRequestGet(context) {
+  const g = requireAdmin(context);
+  if (g.error) return g.error;
+  const reqUrl = new URL(context.request.url);
+  const origin = publicOriginFromEnv(context.env);
+  if (!origin) return json({ error: "public_origin_not_configured" }, 503);
+  const back = new URL("/admin/wizard/step-2-infrastructure", origin);
+  if (reqUrl.searchParams.get("error")) {
+    back.searchParams.set("github", "denied");
+    return Response.redirect(back.toString(), 302);
+  }
+  const cfg = await readGitHubOAuthConfig(context.env, origin);
+  if (!cfg) return json({ error: "GitHub App no configurada" }, 501);
+  const store = await createDeploymentOAuthStore(context.env);
+  const r = await completeGitHubOAuth(cfg, store,
+    { code: reqUrl.searchParams.get("code"), state: reqUrl.searchParams.get("state") },
+    g.user.username);
+  if (!r.ok) return json({ error: r.error }, r.status);
+  back.searchParams.set("github", "connected");
+  return Response.redirect(back.toString(), 302);
+}

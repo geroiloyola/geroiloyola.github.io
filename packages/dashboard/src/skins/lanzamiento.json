@@ -1,0 +1,13 @@
+{
+  "skin": "lanzamiento",
+  "extends": "base",
+  "tokens": {
+    "accent": "#F05D23",
+    "accentText": "#C2410C",
+    "accent2": "#C5D86D",
+    "bg": "#FFF7F2",
+    "panelBorder": "#FADDCB",
+    "radius": "18px",
+    "density": "compact"
+  }
+}

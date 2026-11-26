@@ -1,0 +1,50 @@
+---
+// Footer del ecosistema Portaless -- dos filas con trabajos distintos:
+//
+//   1. Ecosistema  -> TrustScore (confianza verificable), Explore
+//      (descubrimiento de la red) y Powered by Portaless (atribucion --
+//      en un producto open source el "powered by" es de facto
+//      obligatorio y es ademas la puerta de entrada a la comunidad).
+//   2. Posicion    -> "Open Source, Modular, Agent-Ready & Zero-Hosting":
+//      la promesa del producto en cuatro palabras, exactamente. Es la
+//      linea que hace creible el "Powered by" de la fila 1.
+//
+// El texto de UI sale del diccionario (src/i18n) via t(): no hay strings
+// quemados. "TrustScore"/"Explore"/"Powered by Portaless" son nombres de
+// producto y no se traducen (misma cadena en ambos locales), pero pasan por la
+// misma via para que un TMS los vea.
+//
+// NOTA (SITE_ID): el hub /trust/ resuelve el siteId por defecto del sitio
+// ("default", el unico que existe hoy) cuando la URL no trae uno, asi que el
+// enlace funciona en el deploy estatico sin conocer el id. El endpoint JSON
+// sigue siendo /trust/<siteId> (functions/).
+import { t, type Locale } from "../lib/i18n";
+import { SITE_LANG } from "../lib/site-lang";
+import { ROUTES } from "../lib/routes";
+
+interface Props {
+  locale?: Locale;
+}
+const { locale = SITE_LANG } = Astro.props;
+const trustHref = `${import.meta.env.BASE_URL}trust/`;
+const exploreHref = `${import.meta.env.BASE_URL}explore/`;
+const repoHref = "https://github.com/geroiloyola/portaless";
+const commerceEnabled = import.meta.env.ENABLE_COMMERCE === "true";
+const shopHref = `${import.meta.env.BASE_URL}${ROUTES.SHOP.replace(/^\//, "")}/`;
+const shopLabel = locale === "es" ? "Tienda" : "Shop";
+---
+<footer class="site-footer">
+  <div class="container">
+    <nav class="footer-eco" aria-label={t(locale, "footer.ecoAria")}>
+      <a href={trustHref}>{t(locale, "footer.trust")}</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href={exploreHref}>{t(locale, "footer.explore")}</a>
+      {commerceEnabled && <><span class="sep" aria-hidden="true">·</span><a href={shopHref}>{shopLabel}</a></>}
+      <span class="sep" aria-hidden="true">·</span>
+      <a href={repoHref} target="_blank" rel="noopener noreferrer">{t(locale, "footer.poweredBy")}</a>
+    </nav>
+    <p class="footer-note">
+      {t(locale, "footer.promise")}
+    </p>
+  </div>
+</footer>

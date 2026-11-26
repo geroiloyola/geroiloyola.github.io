@@ -1,0 +1,120 @@
+---
+// v0.0.8: FIX -- title/description ya no son obligatorios ni tienen
+// default fijo. Antes este layout siempre renderizaba su propio
+// <title>/<meta description> y NO declaraba <slot name="head" />, asi que
+// cualquier <SeoHead slot="head" .../> o <JsonLd slot="head" .../> pasado
+// por paginas como src/pages/paginas/[slug].astro se descartaba en
+// silencio -- el build pasaba pero el <title> quedaba vacio y el
+// JSON-LD nunca llegaba al HTML final. Ahora el layout expone el slot
+// "head" y solo cae al title/description por defecto si la pagina no
+// provee los suyos via props o via el slot.
+//
+// PR D (llms.txt): todas las paginas declaran rel="describedby" hacia
+// /llms.txt. markdownUrl (opcional) agrega rel="alternate" text/markdown;
+// es una prop y no va por el slot "head" para no reemplazar el <title>.
+export interface Props {
+  title?: string;
+  description?: string;
+  markdownUrl?: string;
+  /**
+   * Idioma del documento (<html lang>). Default: SITE_LANG. El home pasa su
+   * locale ("en"/"es"); el resto del sitio sigue con SITE_LANG.
+   */
+  lang?: string;
+  /**
+   * Alternates hreflang (i18n, docs/i18n-design.md): enlaces ABSOLUTOS a las
+   * otras proyecciones de locale de esta misma pagina. Se emiten como
+   * <link rel="alternate" hreflang=...>.
+   */
+  alternates?: Array<{ hreflang: string; href: string }>;
+  /**
+   * Ruta canonica (sin prefijo de locale) de ESTA pagina, si tiene version en
+   * otro locale (home = "/", Explore = "/explore/"). Sin valor = la pagina no
+   * esta localizada: el header no dibuja el switcher y muestra el aviso de
+   * idioma (si el sitio es multi-locale). Ver src/components/Header.astro.
+   */
+  alternatePath?: string;
+  /**
+   * Alternate EXPLICITO para el selector de idioma (href base-relativo + el
+   * locale de destino). Lo usan las paginas de contenido, cuya traduccion no
+   * sigue la regla global de localePath (vive en /<locale>/paginas/<slug>/).
+   * Si esta presente, gana sobre alternatePath.
+   */
+  languageAlternate?: { hreflang: string; href: string };
+  /**
+   * Tema por pagina (theme pack) ya resuelto: nombre + la declaracion de
+   * variables que themeStyleDecl() construye. Lo pasa
+   * src/pages/paginas/[slug].astro; sin el, la pagina usa el skin del
+   * sitio como siempre. Ver packages/atomic-elements/src/themes/theme-pack.ts.
+   */
+  pageTheme?: { name: string; css: string };
+  /**
+   * Atomic Icons Responsive: contexto del rincon del header (carrito en
+   * tiendas, volumen en videos, null = solo Share). Lo deriva
+   * deriveHeaderContext() desde el arbol de elementos de la pagina.
+   */
+  headerContext?: import("../lib/atomic-responsive-icons").HeaderContext;
+}
+const { title = "Portaless", description = "Sitio construido con Portaless", markdownUrl, lang = SITE_LANG, alternates = [], alternatePath, languageAlternate, pageTheme, headerContext = null } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const llmsTxtUrl = `${base}/llms.txt`;
+// Phase 6: el feed de los posts publicados se anuncia desde TODAS las
+// paginas (no solo /blog), que es como lo encuentran los lectores que no
+// conocen el sitio. /api/analytics sigue el mismo patron: un asset que el
+// hosting con functions puede reemplazar en runtime.
+const rssUrl = `${base}/rss.xml`;
+const analyticsUrl = `${base}/api/analytics`;
+import "../styles/fonts.css";
+import "../styles/global.css";
+// Layout de los elementos con grilla (intrinseco, sin media queries): una sola
+// hoja del core, compartida con el shell runtime y el editor.
+import "@portaless/atomic-elements/elements.css";
+import Header from "../components/Header.astro";
+import { SITE_LANG } from "../lib/site-lang";
+import { isLocale } from "../lib/i18n";
+import Footer from "../components/Footer.astro";
+---
+<!doctype html>
+<!-- Tema por pagina: las variables van como atributo style EN <html>, no
+     como regla de hoja. Motivo verificado en el build:
+     Astro inyecta el <link> de global.css (bloque @media oscuro, misma
+     especificidad 0,2,0) DESPUES del contenido estatico del head, asi
+     que cualquier selector perderia el empate por orden en sistemas en
+     modo oscuro. Un atributo style inline gana a cualquier regla de
+     hoja, siempre, sin !important. Solo lleva las variables del pack;
+     el resto sigue viniendo del skin del sitio. -->
+<html lang={lang} data-theme-pack={pageTheme?.name} style={pageTheme?.css || undefined}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="describedby" type="text/plain" href={llmsTxtUrl} />
+    <link rel="alternate" type="application/rss+xml" title="Feed RSS" href={rssUrl} />
+    {alternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))}
+    {markdownUrl && <link rel="alternate" type="text/markdown" href={markdownUrl} />}
+    <!-- Phase 0: hoja del skin activo del sitio. Va despues de global.css
+         (que trae la paleta oficial como default) para sobreescribirla.
+         En hosting estatico sin functions el 404 lo ignora el navegador
+         y manda el default -- nunca rompe la pagina. -->
+    <link rel="stylesheet" href={`${base}/api/site-skin`} />
+    <!-- Phase 6: analytics del sitio. El asset existe siempre (el build
+         emite un no-op si no hay nada configurado) y en hosting con
+         functions se genera desde la tabla site_settings en runtime,
+         igual que /paginas/[slug]: GitHub Pages se queda con el build. -->
+    <script src={analyticsUrl} defer></script>
+    <script is:inline src={`${base}/portaless-theme-init.js`}></script>
+    <script is:inline src={`${base}/portaless-shell.js`} defer></script>
+    <slot name="head">
+      <meta name="description" content={description} />
+      <title>{title}</title>
+    </slot>
+  </head>
+  <body>
+    <Header context={headerContext} locale={isLocale(lang) ? lang : SITE_LANG} alternatePath={alternatePath} languageAlternate={languageAlternate} />
+    <main class="container">
+      <slot />
+    </main>
+    <Footer locale={isLocale(lang) ? lang : SITE_LANG} />
+  </body>
+</html>

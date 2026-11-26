@@ -1,0 +1,12 @@
+---
+// Home en inglés (locale por defecto, en la raiz "/"). El contenido sale del
+// perfil activo (site-profiles/<starter|demo>/home.json) y la vista compartida
+// vive en components/HomePage.astro.
+import HomePage from "../components/HomePage.astro";
+import { loadHomeLayout } from "../lib/content-pages";
+import { getSiteProfileConfig } from "../lib/site-profile.mjs";
+
+const profile = getSiteProfileConfig(process.env);
+const home = loadHomeLayout(profile.id, "en");
+---
+<HomePage layout={home} locale="en" canonPath={profile.features.esRoutes ? "/" : undefined} />

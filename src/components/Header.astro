@@ -1,0 +1,44 @@
+---
+import { getCollection } from "astro:content";
+import { SITE_LANG, type Locale } from "../lib/site-lang";
+import { publishedPosts } from "../lib/llms-txt";
+import { renderPublicHeaderHtml } from "../lib/public-shell";
+import type { HeaderContext } from "../lib/atomic-responsive-icons";
+
+interface Props {
+  // Atomic Icons Responsive: el rincon derecho adapta su icono principal
+  // al contenido de la pagina (carrito en tiendas, volumen en videos);
+  // null = solo Share. Lo calcula deriveHeaderContext desde el arbol de
+  // elementos del PageLayout y lo pasa BaseLayout.
+  context?: HeaderContext;
+  // Idioma del documento (docs/i18n-design.md): decide las etiquetas del menu
+  // (Home/Inicio, Publications/Publicaciones, Explore/Explorar) y el selector
+  // de idioma. Default: SITE_LANG.
+  locale?: Locale;
+  // Ruta canonica (sin prefijo de locale) de ESTA pagina, si tiene version en
+  // otro locale (home = "/", Explore = "/explore/"). SIN valor = la pagina NO
+  // esta localizada: no se dibuja el switcher (un icono que lleva al home a
+  // ciegas es un downgrade silencioso) y en su lugar va el aviso de idioma.
+  alternatePath?: string;
+  // Alternate EXPLICITO (href base-relativo + locale): lo usan las paginas de
+  // contenido, cuya traduccion vive en /<locale>/paginas/<slug>/. Gana sobre
+  // alternatePath.
+  languageAlternate?: { hreflang: string; href: string };
+}
+const { context = null, locale = SITE_LANG, alternatePath, languageAlternate } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const commerceEnabled = import.meta.env.ENABLE_COMMERCE === "true";
+// El indice de publicaciones solo se anuncia si hay algo que leer: si el sitio
+// no tiene ninguna publicacion no-borrador, el link desaparece en vez de mandar
+// al visitante a un indice vacio.
+const publicPosts = publishedPosts(await getCollection("posts"));
+---
+<Fragment set:html={renderPublicHeaderHtml({
+  base,
+  locale,
+  hasPosts: publicPosts.length > 0,
+  commerceEnabled,
+  context,
+  alternatePath,
+  languageAlternate,
+})} />

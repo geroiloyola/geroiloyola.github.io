@@ -1,0 +1,337 @@
+---
+// Page manager minimo (Phase 0.5 — close the edit->publish cycle):
+// listar las paginas existentes, abrir una en el editor con un click y
+// borrarla. Antes no existia forma de ver que paginas vivian en la base
+// ni de eliminarlas (el editor solo cargaba por ?slug= a mano y
+// functions/admin/pages/[slug].js no tenia DELETE).
+//
+// Datos de GET /admin/api/pages (slugs + titulos, N+1 server-side; el
+// listado vive bajo /admin/api/ porque /admin/pages es ESTA pagina y la
+// Function ganaria al estatico). Borrado via DELETE /admin/pages/:slug
+// (sesion + canWrite server-side, igual que el PUT; /admin/pages/<slug>
+// no colisiona con la pagina HTML del manager, que es /admin/pages a
+// secas). Mismo patron client-side de authorized-agents.astro:
+// fetch desde el <script>, estados display, redirect a login en 401.
+//
+// "Ver" apunta a `${ROUTES.PAGES}/<slug>` (la ruta de contenido del sitio): en
+// self-host esa URL la sirve la base
+// al instante; en hosting estatico (GitHub Pages) la pagina aparece
+// despues de `npm run publish` -- el link no distingue, el ROADMAP lo
+// documenta como limite honesto.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout title="Páginas — Portaless Admin">
+  <div class="pm-page-header">
+    <h1 class="pm-page-title">Páginas</h1>
+    <p class="pm-page-subtitle">
+      Paginas publicadas con Atomic Elements. Editar y "Publicar" en el
+      editoractualiza la pagina publica al instante en self-host.
+    </p>
+  </div>
+
+  <form id="pm-open-form" class="pm-open-form">
+    <input type="text" id="pm-open-slug" placeholder="slug-de-pagina" autocomplete="off" required />
+    <button type="submit" class="pm-primary-btn">Abrir en el editor</button>
+    <a class="pm-secondary-btn" href="/admin/editor?slug=home">Editar portada (/)</a>
+    <a class="pm-secondary-btn" href="/admin/editor">+ Nueva página</a>
+  </form>
+
+  <div id="pm-loading" class="pm-loading">Cargando páginas…</div>
+  <div id="pm-load-error" class="pm-load-error" style="display:none;"></div>
+  <p id="pm-empty" class="pm-empty" style="display:none;">
+    Aún no hay páginas. Crea una en el Editor Visual y publicala.
+  </p>
+
+  <table id="pm-table" class="pm-table" style="display:none;">
+    <thead>
+      <tr><th>Título</th><th>Slug</th><th>Estado</th><th class="pm-actions-col">Acciones</th></tr>
+    </thead>
+    <tbody id="pm-tbody"></tbody>
+  </table>
+
+  <section id="pm-proposals" class="pm-proposals" style="display:none;" aria-labelledby="pm-proposals-title">
+    <h2 id="pm-proposals-title">Propuestas de publicación</h2>
+    <div id="pm-proposal-list"></div>
+  </section>
+
+  <style>
+    .pm-page-header { margin-bottom: 24px; }
+    .pm-page-title { margin: 0 0 6px; font-size: 1.4rem; }
+    .pm-page-subtitle { margin: 0; color: var(--portaless-muted); font-size: 0.9rem; }
+    .pm-open-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+    .pm-open-form input {
+      padding: 8px 10px; border: 1px solid var(--portaless-border); border-radius: 8px;
+      background: var(--portaless-bg); color: var(--portaless-fg); font-size: 0.9rem; font-family: inherit;
+      min-width: 200px;
+    }
+    .pm-primary-btn {
+      border: none; background: var(--portaless-accent); color: #261C15;
+      padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.9rem;
+    }
+    .pm-secondary-btn {
+      padding: 8px 16px; border: 1px solid var(--portaless-border); border-radius: 8px;
+      color: var(--portaless-fg); font-size: 0.9rem; text-decoration: none;
+    }
+    .pm-loading, .pm-empty { color: var(--portaless-muted); font-size: 0.9rem; }
+    .pm-load-error { color: var(--danger-fg, #B3372C); font-size: 0.9rem; }
+    .pm-table {
+      width: 100%; max-width: 760px; border-collapse: collapse;
+      border: 1px solid var(--portaless-border); border-radius: 12px; overflow: hidden;
+    }
+    .pm-table th, .pm-table td {
+      text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--portaless-border); font-size: 0.9rem;
+    }
+    .pm-table th { color: var(--portaless-muted); font-weight: 600; font-size: 0.8rem; }
+    .pm-table tr:last-child td { border-bottom: none; }
+    .pm-actions-col { text-align: right; }
+    .pm-table td:last-child { text-align: right; white-space: nowrap; }
+    .pm-table a { margin-right: 10px; }
+    .pm-del-btn {
+      border: 1px solid var(--portaless-border); background: transparent;
+      color: var(--danger-fg, #B3372C); padding: 4px 10px; border-radius: var(--radius-button, 8px);
+      cursor: pointer; font-size: 0.8rem;
+    }
+    .pm-msg { margin-top: 12px; font-size: 0.85rem; }
+    .pm-msg.pm-err { color: var(--danger-fg, #B3372C); }
+    .pm-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em;
+    }
+    .pm-badge--draft { background: rgba(217, 160, 46, 0.16); color: #B8860B; }
+    .pm-badge--published { background: rgba(46, 160, 90, 0.16); color: #2E9A5A; }
+    .pm-badge--private { background: rgba(120, 120, 120, 0.16); color: var(--muted); }
+    .pm-pub-btn {
+      border: 1px solid var(--portaless-border); background: transparent;
+      color: var(--portaless-accent); padding: 4px 10px; border-radius: var(--radius-button, 8px);
+      cursor: pointer; font-size: 0.8rem; margin-right: 10px;
+    }
+    .pm-proposals { margin-top: 2rem; max-width: 900px; }
+    .pm-proposal { border: 1px solid var(--portaless-border); border-radius: 12px; padding: 16px; margin: 12px 0; }
+    .pm-proposal h3 { margin: 0 0 8px; font-size: 1rem; }
+    .pm-proposal pre { max-height: 320px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 12px; border-radius: 8px; background: var(--panel-bg); }
+    .pm-proposal-stale { color: var(--danger-fg, #B3372C); font-weight: 700; }
+    .pm-approve-btn { border: 0; background: var(--portaless-accent); color: #261C15; padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    .pm-approve-btn:disabled { opacity: .55; cursor: not-allowed; }
+  </style>
+</BaseLayout>
+
+<script>
+  import { ROUTES } from "../../lib/routes";
+  const loadingEl = document.getElementById("pm-loading")!;
+  const errorEl = document.getElementById("pm-load-error")!;
+  const emptyEl = document.getElementById("pm-empty")!;
+  const tableEl = document.getElementById("pm-table")!;
+  const tbodyEl = document.getElementById("pm-tbody")!;
+  const proposalsSection = document.getElementById("pm-proposals")!;
+  const proposalList = document.getElementById("pm-proposal-list")!;
+
+  const msgEl = document.createElement("p");
+  msgEl.className = "pm-msg";
+  msgEl.style.display = "none";
+  tableEl.insertAdjacentElement("afterend", msgEl);
+
+  function showMsg(text: string) {
+    msgEl.textContent = text;
+    msgEl.className = "pm-msg pm-err";
+    msgEl.style.display = "block";
+    window.setTimeout(() => { msgEl.style.display = "none"; }, 5000);
+  }
+
+  async function loadProposals(slug: string) {
+    const res = await fetch(`/admin/api/page-proposals?slug=${encodeURIComponent(slug)}`, { credentials: "same-origin" });
+    if (res.status === 401) { window.location.href = "/admin/login?error=1"; return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const payload = await res.json();
+    for (const proposal of payload.proposals ?? []) {
+      proposalsSection.style.display = "";
+      const card = document.createElement("article");
+      card.className = "pm-proposal";
+      const heading = document.createElement("h3");
+      heading.textContent = `${slug} · revisión ${proposal.revisionNo}`;
+      card.appendChild(heading);
+      const meta = document.createElement("p");
+      meta.textContent = `Base ${proposal.baseRevisionId} · SHA-256 ${proposal.contentHash}`;
+      card.appendChild(meta);
+      if (proposal.stale) {
+        const stale = document.createElement("p");
+        stale.className = "pm-proposal-stale";
+        stale.textContent = "La página cambió desde esta propuesta. No se puede aprobar; crea una propuesta nueva.";
+        card.appendChild(stale);
+      }
+      const diff = document.createElement("pre");
+      diff.textContent = proposal.diff
+        ? JSON.stringify({ changes: proposal.diff, truncated: proposal.diffTruncated }, null, 2)
+        : "No se pudo calcular el diff para la revisión base.";
+      card.appendChild(diff);
+      const approve = document.createElement("button");
+      approve.type = "button";
+      approve.className = "pm-approve-btn";
+      approve.textContent = "Aprobar y publicar esta revisión";
+      approve.disabled = Boolean(proposal.stale || !proposal.diff);
+      approve.addEventListener("click", () => {
+        if (!window.confirm(`¿Aprobar y publicar exactamente la revisión ${proposal.revisionId}?`)) return;
+        approve.disabled = true;
+        void (async () => {
+          const approved = await fetch("/admin/api/page-proposals", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify({ slug, revisionId: proposal.revisionId }),
+          });
+          if (approved.status === 401) { window.location.href = "/admin/login?error=1"; return; }
+          if (approved.status === 409) throw new Error("La página cambió. Recarga las propuestas.");
+          if (!approved.ok) throw new Error(`HTTP ${approved.status}`);
+          card.remove();
+          if (!proposalList.children.length) proposalsSection.style.display = "none";
+          showMsg(`Publicada la revisión exacta ${proposal.revisionId}.`);
+        })().catch((error) => { approve.disabled = false; showMsg(`No se pudo aprobar la revisión: ${(error as Error).message}`); });
+      });
+      card.appendChild(approve);
+      proposalList.appendChild(card);
+    }
+  }
+
+  function row(page: { slug: string; title: string; status?: string }): HTMLTableRowElement {
+    const tr = document.createElement("tr");
+    let status: string = ["draft", "published", "private"].includes(page.status || "")
+      ? page.status!
+      : page.status === undefined ? "published" : "private";
+
+    const isHome = page.slug === "home";
+    const tdTitle = document.createElement("td");
+    tdTitle.textContent = isHome ? `${page.title} · Portada (/)` : page.title;
+    tr.appendChild(tdTitle);
+
+    const tdSlug = document.createElement("td");
+    const code = document.createElement("code");
+    code.textContent = isHome ? "home (/)" : page.slug;
+    tdSlug.appendChild(code);
+    tr.appendChild(tdSlug);
+
+    const tdStatus = document.createElement("td");
+    const badge = document.createElement("span");
+    badge.className = `pm-badge pm-badge--${status}`;
+    const statusLabel = (value: string) => value === "draft" ? "Borrador" : value === "private" ? "Privada" : "Publicada";
+    badge.textContent = statusLabel(status);
+    tdStatus.appendChild(badge);
+    tr.appendChild(tdStatus);
+
+    const tdActions = document.createElement("td");
+    const preview = document.createElement("a");
+    preview.href = `/admin/preview/pages/${encodeURIComponent(page.slug)}`;
+    preview.target = "_blank";
+    preview.rel = "noopener noreferrer";
+    preview.textContent = "Vista previa";
+    const view = document.createElement("a");
+    view.href = isHome ? "/" : `${ROUTES.PAGES}/${encodeURIComponent(page.slug)}`;
+    view.target = "_blank";
+    view.rel = "noopener";
+    view.textContent = "Ver ↗";
+
+    const changeStatus = document.createElement("button");
+    changeStatus.type = "button";
+    changeStatus.className = "pm-pub-btn";
+    changeStatus.textContent = status === "published" ? "Hacer privada" : "Publicar";
+    changeStatus.addEventListener("click", () => {
+      const nextStatus = status === "published" ? "private" : "published";
+      changeStatus.disabled = true;
+      (async () => {
+        const loadRes = await fetch(`/admin/pages/${encodeURIComponent(page.slug)}`, { credentials: "same-origin" });
+        if (loadRes.status === 401) { window.location.href = "/admin/login?error=1"; return; }
+        if (!loadRes.ok) throw new Error(`HTTP ${loadRes.status}`);
+        const layout = await loadRes.json();
+        layout.status = nextStatus;
+        const putRes = await fetch(`/admin/pages/${encodeURIComponent(page.slug)}`, {
+          method: "PUT",
+          headers: {
+            "content-type": "application/json",
+            "if-match": loadRes.headers.get("etag") || "",
+          },
+          body: JSON.stringify(layout),
+          credentials: "same-origin",
+        });
+        if (putRes.status === 401) { window.location.href = "/admin/login?error=1"; return; }
+        if (!putRes.ok) throw new Error(`HTTP ${putRes.status}`);
+        status = nextStatus;
+        badge.className = `pm-badge pm-badge--${status}`;
+        badge.textContent = statusLabel(status);
+        changeStatus.textContent = status === "published" ? "Hacer privada" : "Publicar";
+        if (status === "published") {
+          preview.remove();
+          if (!view.isConnected) tdActions.appendChild(view);
+        } else {
+          view.remove();
+          if (!preview.isConnected) tdActions.appendChild(preview);
+        }
+      })().catch((err) => { changeStatus.disabled = false; showMsg(`No se pudo cambiar la publicación: ${(err as Error).message}`); });
+    });
+    tdActions.appendChild(changeStatus);
+
+    const edit = document.createElement("a");
+    edit.href = `/admin/editor?slug=${encodeURIComponent(page.slug)}`;
+    edit.textContent = "Editar";
+    tdActions.appendChild(edit);
+
+    if (status !== "published") tdActions.appendChild(preview);
+    else tdActions.appendChild(view);
+
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "pm-del-btn";
+    del.textContent = "Borrar";
+    del.addEventListener("click", () => {
+      if (!window.confirm(`¿Borrar la página "${page.title}"? Esta acción no se puede deshacer.`)) return;
+      del.disabled = true;
+      (async () => {
+        const res = await fetch(`/admin/pages/${encodeURIComponent(page.slug)}`, { method: "DELETE" });
+        if (res.status === 401) { window.location.href = "/admin/login?error=1"; return; }
+        if (res.status === 404 || res.ok) {
+          tr.remove();
+          if (!tbodyEl.children.length) {
+            tableEl.style.display = "none";
+            emptyEl.style.display = "";
+          }
+          return;
+        }
+        del.disabled = false;
+        showMsg(`No se pudo borrar (HTTP ${res.status}).`);
+      })().catch(() => { del.disabled = false; showMsg("Error de red al borrar."); });
+    });
+    tdActions.appendChild(del);
+
+    tr.appendChild(tdActions);
+    return tr;
+  }
+
+  async function load() {
+    try {
+      const res = await fetch("/admin/api/pages", { credentials: "same-origin" });
+      if (res.status === 401) { window.location.href = "/admin/login?error=1"; return; }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const pages: Array<{ slug: string; title: string; status?: string }> = Array.isArray(data.pages)
+        ? data.pages
+        : (data.slugs ?? []).map((slug: string) => ({ slug, title: slug }));
+      loadingEl.style.display = "none";
+      if (pages.length === 0) {
+        emptyEl.style.display = "";
+        return;
+      }
+      for (const page of pages) tbodyEl.appendChild(row(page));
+      tableEl.style.display = "";
+      await Promise.all(pages.map((page) => loadProposals(page.slug).catch(() => {})));
+    } catch (err) {
+      loadingEl.style.display = "none";
+      errorEl.textContent = `No se pudieron cargar las páginas: ${(err as Error).message}`;
+      errorEl.style.display = "block";
+    }
+  }
+
+  document.getElementById("pm-open-form")!.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const value = (document.getElementById("pm-open-slug") as HTMLInputElement).value.trim();
+    if (value) window.location.href = `/admin/editor?slug=${encodeURIComponent(value)}`;
+  });
+
+  load();
+</script>

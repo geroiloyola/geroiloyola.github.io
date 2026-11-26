@@ -1,0 +1,12 @@
+{
+  "skin": "portafolio",
+  "extends": "base",
+  "tokens": {
+    "accent": "#9BB56A",
+    "accentText": "#4A5A1E",
+    "accent2": "#6E8C9A",
+    "bg": "#F4F4F0",
+    "panelBorder": "#E0E2D6",
+    "radius": "14px"
+  }
+}

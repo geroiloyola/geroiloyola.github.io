@@ -1,0 +1,106 @@
+// GET /sitemap.xml -- generado en build. La logica esta en src/lib/sitemap.ts.
+//
+// Fuentes (mismo criterio que /llms.txt):
+//   - Home, /blog/ y /explore/ (hub de descubrimiento): lastmod = pubDate del post mas reciente.
+//   - Posts publicados (sin borradores): lastmod = pubDate.
+//   - Paginas de src/content/pages/*.json (todas sus versiones de locale).
+//   - Docs publicados (docs-nav.mjs) y sus rutas.
+//   - Productos de la tienda si el commerce esta activo.
+//
+// Antes las paginas salian de page-store, que en build estatico esta vacio:
+// el sitemap nunca listaba paginas ni posts y todas las URLs llevaban la
+// fecha del build como lastmod. Tampoco respetaba el base de Astro.
+
+import type { APIRoute } from "astro";
+import { getCollection } from "astro:content";
+import { getSiteUrl } from "../lib/seo";
+import { publishedPosts } from "../lib/llms-txt";
+import { buildSitemapXml, type SitemapEntry } from "../lib/sitemap";
+import { DOC_ENTRIES } from "../lib/docs-nav.mjs";
+import { ROUTES } from "../lib/routes";
+import { loadContentPages, versionHref } from "../lib/content-pages";
+
+async function collectCommerceEntries(): Promise<SitemapEntry[]> {
+  try {
+    const { isCommerceEnabled, fetchProducts } = await import("../commerce/medusa-client");
+    if (!(await isCommerceEnabled())) return [];
+    const products = await fetchProducts();
+    return products
+      .filter((product: any) => typeof product?.handle === "string" && product.handle.length > 0)
+      .map((product: any) => ({
+        path: `${ROUTES.SHOP}/${encodeURIComponent(product.handle)}`,
+        changefreq: "weekly" as const,
+        priority: 0.7,
+      }));
+  } catch {
+    return [];
+  }
+}
+
+import { getSiteProfileConfig } from "../lib/site-profile.mjs";
+
+export const GET: APIRoute = async ({ site }) => {
+  const profile = getSiteProfileConfig(process.env);
+  const posts = publishedPosts(await getCollection("posts"));
+  const latest = posts[0]?.data.pubDate;
+
+  // Una entrada por VERSION de cada pagina de contenido del perfil activo.
+  const contentPageEntries = loadContentPages(profile.id).flatMap((page) =>
+    page.versions.map((version) => ({
+      path: versionHref(version, "/"),
+      changefreq: "monthly" as const,
+      priority: 0.8,
+    })),
+  );
+
+  const entries: SitemapEntry[] = [
+    { path: "/", lastmod: latest, changefreq: "weekly", priority: 1.0 },
+    ...(profile.features.esRoutes
+      ? [{ path: "/es/", lastmod: latest, changefreq: "weekly" as const, priority: 0.9 }]
+      : []),
+    ...(profile.features.beta
+      ? [
+          { path: "/beta/", lastmod: latest, changefreq: "monthly" as const, priority: 0.9 },
+          { path: "/es/beta/", lastmod: latest, changefreq: "monthly" as const, priority: 0.9 },
+        ]
+      : []),
+    ...(profile.features.shop
+      ? [
+          { path: "/shop/", lastmod: latest, changefreq: "weekly" as const, priority: 0.7 },
+          { path: "/es/shop/", lastmod: latest, changefreq: "weekly" as const, priority: 0.7 },
+        ]
+      : []),
+    { path: "/blog/", lastmod: latest, changefreq: "weekly", priority: 0.6 },
+    { path: "/explore/", lastmod: latest, changefreq: "weekly", priority: 0.8 },
+    ...(profile.features.esRoutes
+      ? [{ path: "/es/explore/", lastmod: latest, changefreq: "weekly" as const, priority: 0.7 }]
+      : []),
+    ...(profile.features.projections
+      ? [
+          { path: "/projections/", lastmod: latest, changefreq: "monthly" as const, priority: 0.6 },
+          { path: "/es/projections/", lastmod: latest, changefreq: "monthly" as const, priority: 0.6 },
+        ]
+      : []),
+    ...(profile.features.docs
+      ? [
+          { path: "/docs/", changefreq: "monthly" as const, priority: 0.8 },
+          ...DOC_ENTRIES.map((doc) => ({
+            path: `/docs/${doc.slug}/`,
+            changefreq: "monthly" as const,
+            priority: 0.6,
+          })),
+        ]
+      : []),
+    ...posts.map((post) => ({
+      path: `/blog/${post.id}/`,
+      lastmod: post.data.pubDate,
+      changefreq: "monthly" as const,
+      priority: 0.7,
+    })),
+    ...contentPageEntries,
+    ...(profile.features.shop ? await collectCommerceEntries() : []),
+  ];
+
+  const body = buildSitemapXml(getSiteUrl(site), import.meta.env.BASE_URL, entries);
+  return new Response(body, { headers: { "Content-Type": "application/xml; charset=utf-8" } });
+};

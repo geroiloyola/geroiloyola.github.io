@@ -1,0 +1,463 @@
+/* Estilos del Centro de Permisos: agrupado por RIESGO de la capacidad
+ * (alto primero), un switch individual por cada plugin/agente/theme que la
+ * solicita, y la categoria como etiqueta secundaria. Reutiliza las variables
+ * de tema definidas en src/styles/global.css (--portaless-bg, --portaless-fg,
+ * --portaless-accent, etc.) para que el Centro de Permisos se vea coherente
+ * con el resto del dashboard. */
+
+.pc-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 720px;
+}
+
+.pc-risk-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  border: 1px solid var(--portaless-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--panel-bg);
+}
+
+.pc-risk-summary-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pc-risk-summary-count {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pc-risk-summary-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--portaless-muted);
+}
+
+.pc-category {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pc-category-title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--portaless-muted);
+}
+
+.pc-capability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pc-capability {
+  border: 1px solid var(--portaless-border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: var(--panel-bg);
+}
+
+.pc-capability-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pc-cap-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pc-cap-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--portaless-fg);
+}
+
+.pc-cap-desc {
+  font-size: 0.82rem;
+  color: var(--portaless-muted);
+  line-height: 1.45;
+}
+
+.pc-cap-category {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: var(--portaless-muted);
+  border: 1px solid var(--portaless-border);
+}
+
+.pc-subject-list {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-top: 1px solid var(--portaless-border);
+}
+
+.pc-subject-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--portaless-border);
+}
+
+.pc-subject-row:last-child {
+  border-bottom: none;
+}
+
+.pc-subject-label {
+  font-size: 0.88rem;
+  color: var(--portaless-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Icono del tipo de subject: SVG inline con stroke="currentColor", asi que
+   toma el color del label sin ninguna regla de color -- el contraste ya
+   esta resuelto en .pc-subject-label. flex-shrink: 0 para que el ellipsis
+   del nombre nunca colapse el icono. */
+.pc-subject-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.pc-subject-icon svg { display: block; }
+
+.pc-subject-status {
+  flex: 1;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--portaless-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pc-subject-status.pc-status-error {
+  color: #ff8f8f;
+}
+
+.pc-empty {
+  font-size: 0.82rem;
+  color: var(--portaless-muted);
+  padding-top: 8px;
+  font-style: italic;
+}
+
+/* Switch estilo iOS: capsula con knob que se desliza. */
+.pc-switch {
+  flex-shrink: 0;
+  position: relative;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  border: none;
+  background: var(--panel-border);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.15s ease;
+}
+
+.pc-switch:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+
+.pc-switch.pc-on {
+  background: var(--portaless-accent);
+}
+
+.pc-switch:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.pc-switch .pc-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f2f2f2;
+  transition: transform 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.pc-switch.pc-on .pc-knob {
+  transform: translateX(18px);
+}
+
+.pc-switch.pc-saving .pc-knob {
+  box-shadow: 0 0 0 3px rgba(110, 231, 183, 0.35);
+}
+
+/* Cabecera y estados de carga/error de la pagina completa -- usados por
+ * src/pages/admin/permissions.astro. */
+.pc-page-header {
+  margin-bottom: 24px;
+}
+
+.pc-page-title {
+  margin: 0 0 6px;
+  font-size: 1.4rem;
+}
+
+.pc-page-subtitle {
+  margin: 0;
+  color: var(--portaless-muted);
+  font-size: 0.9rem;
+  max-width: 640px;
+  line-height: 1.5;
+}
+
+.pc-loading,
+.pc-load-error {
+  padding: 24px 0;
+  color: var(--portaless-muted);
+  font-size: 0.9rem;
+}
+
+.pc-load-error {
+  color: #ff8f8f;
+}
+
+/* v0.0.9.12: badge de trustScore estilo Trakt (5 estrellas, escala 0-10,
+ * relleno parcial por estrella, color dinamico por rango). Vive junto al
+ * nombre del subject -- .pc-subject-label-wrap envuelve label + badge
+ * para que el layout flex del row no cambie, y para que el ellipsis de
+ * .pc-subject-label no se herede al badge (que no debe truncarse). */
+
+.pc-subject-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pc-subject-label-wrap .pc-subject-label {
+  flex-shrink: 1;
+}
+
+.pc-trust-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pc-trust-stars {
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: 1px;
+}
+
+.pc-trust-star-slot {
+  position: relative;
+  display: inline-block;
+  width: 0.9em;
+  line-height: 1;
+}
+
+.pc-trust-star {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.95em;
+}
+
+.pc-trust-star-bg {
+  color: var(--portaless-border);
+}
+
+.pc-trust-star-fg {
+  /* El color real se fija inline en JS segun el rango del puntaje
+   * (rojo/naranja/amarillo/verde claro/verde oscuro), igual que el
+   * relleno parcial via clip-path -- ambos dependen del valor exacto,
+   * no de una clase fija. */
+  position: relative;
+}
+
+.pc-trust-score-text {
+  margin-left: 4px;
+}
+
+.pc-trust-votes-text {
+  /* .pc-trust-summary es inline-flex, asi que cada hijo es un flex item y
+   * su anonymous line box recorta el espacio inicial del textContent
+   * (" (0 comentarios)") -- sin esto se pegaba al puntaje: "0.0(0
+   * comentarios)". */
+  margin-left: 4px;
+  color: var(--portaless-muted);
+  font-weight: 400;
+}
+
+/* v0.0.9.13: formulario de voto interactivo del trustScore de plugins.
+ * .pc-trust-summary convierte el badge de solo-lectura (v0.0.9.12) en un
+ * boton clicable; .pc-vote-form es el mini-formulario que se despliega
+ * debajo al hacer click (5 estrellas ENTERAS 1-5, comentario opcional,
+ * boton enviar). Colapsado con max-height + opacity en vez de display:none
+ * para poder animar la apertura sin reflow brusco. */
+
+.pc-trust-summary {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.pc-trust-summary.pc-trust-readonly {
+  cursor: default;
+}
+
+.pc-trust-summary:not(.pc-trust-readonly):hover .pc-trust-stars {
+  filter: brightness(1.15);
+}
+
+.pc-vote-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid var(--portaless-border);
+  border-radius: 10px;
+  background: #1a1d23;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease, opacity 0.15s ease;
+  width: 100%;
+}
+
+.pc-vote-form.pc-vote-form-open {
+  max-height: 220px;
+  opacity: 1;
+}
+
+.pc-vote-stars-row {
+  display: flex;
+  gap: 4px;
+}
+
+.pc-vote-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 2px;
+  color: var(--portaless-border);
+  transition: color 0.1s ease;
+}
+
+.pc-vote-star.pc-vote-star-filled {
+  color: #f2c94c;
+}
+
+.pc-vote-comment {
+  resize: vertical;
+  min-height: 44px;
+  border-radius: var(--radius-input, 6px);
+  border: 1px solid var(--portaless-border);
+  background: var(--bg);
+  color: var(--portaless-fg);
+  font-size: 0.82rem;
+  padding: 6px 8px;
+  font-family: inherit;
+}
+
+.pc-vote-submit {
+  align-self: flex-start;
+  border: 1px solid var(--accent-text);
+  background: transparent;
+  color: var(--accent-text);
+  border-radius: var(--radius-button, 8px);
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.pc-vote-submit:hover:not(:disabled) {
+  background: var(--portaless-accent);
+  color: #261C15;
+}
+
+.pc-vote-submit:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.pc-vote-feedback {
+  font-size: 0.75rem;
+  color: var(--portaless-muted);
+  min-height: 1em;
+}
+
+.pc-vote-feedback.pc-status-error {
+  color: #ff8f8f;
+}
+
+/* APW 6.5: alta de excepcion de lectura por DID de lector. Fila simple
+ * (input + boton) dentro del bloque de la capacidad
+ * trust:read-governance-bypass. El boton reutiliza .pc-vote-submit. */
+.pc-reader-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px dashed var(--portaless-border);
+  border-radius: 10px;
+  width: 100%;
+}
+
+.pc-reader-did {
+  flex: 1 1 220px;
+  min-width: 0;
+  border-radius: var(--radius-input, 6px);
+  border: 1px solid var(--portaless-border);
+  background: var(--bg);
+  color: var(--portaless-fg);
+  font-size: 0.82rem;
+  padding: 6px 8px;
+  /* es un DID: el valor se compara caracter a caracter, va en mono */
+  font-family: var(--font-mono);
+}
+
+.pc-reader-form .pc-vote-feedback {
+  flex-basis: 100%;
+}

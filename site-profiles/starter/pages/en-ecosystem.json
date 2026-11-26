@@ -1,0 +1,124 @@
+{
+  "version": "0.1",
+  "slug": "en-ecosystem",
+  "title": "Ecosystem — Portaless, Verared, Gerarion & Tokenless",
+  "description": "How Portaless, Verared, Gerarion, and Tokenless connect: purpose, architecture, and roadmap of all four creations.",
+  "theme": "portaless-nocturno",
+  "root": [
+    {
+      "id": "en-eco-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "The ecosystem: four modular pieces built to work together",
+        "subtitle": "Each project solves a focused layer without forcing a monolith. Adopt a single piece or combine them as your site or product grows.",
+        "ctaLabel": "Leer en Español →",
+        "ctaHref": "/pages/ecosistema/"
+      }
+    },
+    {
+      "id": "en-eco-portaless-h",
+      "type": "Heading",
+      "props": {
+        "text": "1. Portaless — Sovereign modular CMS node",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Content & publishing layer",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-eco-portaless-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "Portaless is a lightweight Astro CMS that compiles to static HTML while offering an optional dynamic runtime (Node/Docker or Cloudflare Pages + D1) with a native visual editor (17 Atomic Elements), live editable home page (/), strict CSP without unsafe-inline, native MCP server (19 tools), and sandboxed plugins with atomic permissions."
+      }
+    },
+    {
+      "id": "en-eco-verared-h",
+      "type": "Heading",
+      "props": {
+        "text": "2. Verared — Vera Trust Stack & agent protocol",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Identity & trust layer (Apache-2.0)",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-eco-verared-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "Verared packages the cryptographic and protocol primitives into 7 standalone npm packages under @verared/* (net, apw, local-trust, reputation, trust-layer, cloud-images, and identity-atproto). Any node can verify did:apw identity, validate Web Bot Auth signatures, and enforce local trust policies without a central gatekeeper."
+      }
+    },
+    {
+      "id": "en-eco-gerarion-h",
+      "type": "Heading",
+      "props": {
+        "text": "3. Gerarion — [Editable section]",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Open documentation slot",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-eco-gerarion-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "[Editable] Replace this paragraph in site-profiles/starter/pages/en-ecosystem.json or via /admin/editor?slug=en-ecosystem to describe the problem Gerarion solves, who it is for, and how it integrates with Portaless and Verared."
+      }
+    },
+    {
+      "id": "en-eco-tokenless-h",
+      "type": "Heading",
+      "props": {
+        "text": "4. Tokenless — [Editable section]",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Open documentation slot",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-eco-tokenless-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "[Editable] Replace this paragraph in site-profiles/starter/pages/en-ecosystem.json or via /admin/editor?slug=en-ecosystem to document Tokenless purpose, architecture, and primary use cases."
+      }
+    },
+    {
+      "id": "en-eco-nav",
+      "type": "Columns",
+      "props": { "count": 2, "gap": 16 },
+      "columnSlots": [
+        [
+          {
+            "id": "en-eco-btn-portaless",
+            "type": "Button",
+            "props": {
+              "label": "Open the Portaless guide",
+              "href": "/pages/en-portaless/",
+              "variant": "solid",
+              "size": "sm"
+            }
+          }
+        ],
+        [
+          {
+            "id": "en-eco-btn-home",
+            "type": "Button",
+            "props": {
+              "label": "← Back to English home",
+              "href": "/pages/en/",
+              "variant": "outline",
+              "size": "sm"
+            }
+          }
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+// Endpoint de referencia: PUT /admin/pages/:slug guarda un PageLayout de
+// Atomic Elements. Es el primer endpoint de escritura del dashboard que
+// valida canWrite(role) del lado del SERVIDOR -- no solo en la UI.
+//
+// CONTEXTO: el guard DOM-level agregado en packages/dashboard/src/security/
+// role-guard.ts es defensa en profundidad en el cliente (deshabilita
+// controles), pero un viewer que llamara este endpoint directamente con
+// curl/fetch, saltandose la UI, podria escribir igual si el servidor no
+// valida. Este archivo es la referencia a replicar en cualquier otro
+// endpoint de escritura del dashboard (permisos, configuracion, etc.).
+//
+// Requiere que la sesion ya haya sido validada por functions/admin/_middleware.js
+// (que corre antes, para toda la ruta /admin/*) y que ese middleware deje
+// disponible el usuario autenticado en context.data (patron estandar de
+// Cloudflare Pages Functions).
+//
+// v0.0.8: VERIFICADO -- functions/admin/_middleware.js valida la sesion
+// via AuthService.validateSession() (retorna { username, role }) y ahora
+// expone ese objeto como context.data.user (ademas de context.data.session,
+// que se mantiene por compatibilidad). El fix se aplico directamente en el
+// middleware porque antes solo asignaba `session`, no `user`, lo que habria
+// causado 401 en este endpoint pese a sesiones validas.
+//
+// v0.0.8: se conecta el PageStore real via createPageStore(context.env),
+// que elige D1PageStore (Cloudflare Pages, env.DB) o SqlitePageStore
+// (self-hosted, env.PORTALESS_SQLITE_PATH) -- mismo patron que
+// packages/permissions y packages/trust-layer/src/ledger. Ambas
+// implementaciones cumplen la interfaz PageStore ya existente en
+// packages/atomic-elements/src/persistence/page-store.ts (load/save/list),
+// la misma que usa LocalStoragePageStore en el editor cliente. Antes, GET
+// devolvia siempre 501 "not_implemented" y PUT solo validaba sin persistir.
+//
+// v0.0.9.3: se corrigio un bug real de nombre de binding -- store-factory.ts
+// esperaba env.PORTALESS_DB (nunca coincidia con el binding `DB` real que
+// documenta wrangler.toml), ahora usa env.DB como las demas factories. Ver
+// el comentario extenso en persistence/store-factory.ts.
+
+import { validatePageLayout } from "@portaless/atomic-elements/page-schema";
+import { createPageStore } from "@portaless/atomic-elements/store-factory";
+import { emitActivity } from "@portaless/dashboard/activity";
+
+function canWrite(role) {
+  return role === "admin";
+}
+
+export async function onRequestPut(context) {
+  const { request, params, data, env } = context;
+
+  const user = data?.user;
+  if (!user) {
+    return new Response(JSON.stringify({ error: "unauthenticated" }), {
+      status: 401,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  if (!canWrite(user.role)) {
+    return new Response(
+      JSON.stringify({
+        error: "forbidden",
+        message: `El rol '${user.role}' no tiene permiso de escritura. Se requiere rol 'admin'.`,
+      }),
+      { status: 403, headers: { "content-type": "application/json" } }
+    );
+  }
+
+  let layout;
+  try {
+    layout = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ error: "invalid_json_body" }), {
+      status: 400,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  if (layout?.slug !== params.slug) {
+    return new Response(
+      JSON.stringify({ error: "slug_mismatch", message: "El slug de la URL no coincide con el del body." }),
+      { status: 400, headers: { "content-type": "application/json" } }
+    );
+  }
+
+  const validation = validatePageLayout(layout);
+  if (!validation.valid) {
+    return new Response(
+      JSON.stringify({ error: "invalid_page_layout", details: validation.errors }),
+      { status: 400, headers: { "content-type": "application/json" } }
+    );
+  }
+
+  const pageStore = await createPageStore(env);
+  const ifMatch = request.headers?.get?.("if-match");
+  const ifNoneMatch = request.headers?.get?.("if-none-match");
+  if ((!ifMatch && ifNoneMatch !== "*") || (ifMatch && ifNoneMatch)) {
+    return new Response(JSON.stringify({ error: "revision_precondition_required", message: "Envía If-Match con la revisión cargada, o If-None-Match: * al crear." }), {
+      status: 428,
+      headers: { "content-type": "application/json", "cache-control": "no-store" },
+    });
+  }
+  const expectedRevisionId = ifMatch ? ifMatch.replace(/^W\//, "").replace(/^"|"$/g, "") : null;
+  let revision;
+  try {
+    revision = await pageStore.save(layout, { expectedRevisionId, actor: user.username });
+  } catch (error) {
+    if (error?.message === "revision_conflict") {
+      return new Response(JSON.stringify({ error: "revision_conflict", message: "La página cambió desde que la cargaste. Recárgala y aplica de nuevo tus cambios." }), {
+        status: 409,
+        headers: { "content-type": "application/json", "cache-control": "no-store" },
+      });
+    }
+    throw error;
+  }
+
+  // Fase 10: el feed de actividad se alimenta en el punto de escritura (un
+  // solo escritor, sin backfill). emitActivity nunca lanza.
+  await emitActivity(env, {
+    kind: "page.saved",
+    actor: user.username,
+    subject: layout.slug,
+    detail: typeof layout.title === "string" && layout.title ? layout.title : null,
+  });
+
+  return new Response(JSON.stringify({ ok: true, slug: layout.slug, ...revision }), {
+    status: 200,
+    headers: { "content-type": "application/json", etag: `"${revision.revisionId}"`, "cache-control": "no-store" },
+  });
+}
+
+export async function onRequestGet(context) {
+  const { data, params, env } = context;
+  if (!data?.user) {
+    return new Response(JSON.stringify({ error: "unauthenticated" }), {
+      status: 401,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  const pageStore = await createPageStore(env);
+  const layout = await pageStore.load(params.slug);
+
+  if (!layout) {
+    return new Response(JSON.stringify({ error: "not_found", slug: params.slug }), {
+      status: 404,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  return new Response(JSON.stringify(layout), {
+    status: 200,
+    headers: {
+      "content-type": "application/json",
+      ...(layout.revisionId ? { etag: `"${layout.revisionId}"` } : {}),
+      "cache-control": "no-store",
+    },
+  });
+}
+
+// Phase 0.5 (close the edit->publish cycle): DELETE /admin/pages/:slug
+// habilita el page manager minimo (borrar una pagina existente). Mismo
+// guard que el PUT: sesion (context.data.user) + canWrite(role)
+// server-side. 404 con { removed: false } si no habia nada que borrar
+// -- el manager lo trata como "ya no esta", no como error de red.
+export async function onRequestDelete(context) {
+  const { data, params, env } = context;
+
+  const user = data?.user;
+  if (!user) {
+    return new Response(JSON.stringify({ error: "unauthenticated" }), {
+      status: 401,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  if (!canWrite(user.role)) {
+    return new Response(
+      JSON.stringify({
+        error: "forbidden",
+        message: `El rol '${user.role}' no tiene permiso de escritura. Se requiere rol 'admin'.`,
+      }),
+      { status: 403, headers: { "content-type": "application/json" } }
+    );
+  }
+
+  const pageStore = await createPageStore(env);
+  const removed = await pageStore.remove(params.slug);
+
+  if (!removed) {
+    return new Response(JSON.stringify({ error: "not_found", removed: false, slug: params.slug }), {
+      status: 404,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  await emitActivity(env, { kind: "page.deleted", actor: user.username, subject: params.slug });
+
+  return new Response(JSON.stringify({ removed: true, slug: params.slug }), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
+}

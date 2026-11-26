@@ -1,0 +1,175 @@
+// Flujo OAuth web de GitHub App (user access token) con state + PKCE (S256).
+// Docs: https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app
+//
+// v0.0.9.27: readGitHubOAuthConfig() es async y lee PRIMERO la config dinamica
+// (App registrada via manifiesto, secretos cifrados en D1/SQLite). Las env vars
+// PORTALESS_GITHUB_APP_CLIENT_ID/SECRET quedan como fallback para quien cree
+// la App a mano. PORTALESS_OAUTH_TOKEN_ENCRYPTION_KEY sigue siendo obligatoria.
+import { encryptToken, decryptToken, randomUrlSafe, pkceChallenge } from "./token-crypto";
+import type { DeploymentOAuthStore } from "./oauth-store";
+import {
+  type ProviderConfigStore,
+  GITHUB_APP_PROVIDER_ID,
+  createProviderConfigStore,
+  getProviderConfig,
+} from "./providers-config-store";
+
+export const GITHUB_PROVIDER = "github";
+const STATE_TTL_MS = 10 * 60 * 1000;
+
+export interface GitHubOAuthConfig {
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+  encryptionKey: string;
+  fetchImpl?: typeof fetch;
+}
+
+export async function readGitHubOAuthConfig(
+  env: any,
+  origin: string,
+  providerStore?: ProviderConfigStore
+): Promise<GitHubOAuthConfig | null> {
+  const encryptionKey = env?.PORTALESS_OAUTH_TOKEN_ENCRYPTION_KEY;
+  if (!encryptionKey) return null;
+  const redirectUri = env?.PORTALESS_GITHUB_OAUTH_REDIRECT_URI || `${origin}/admin/api/oauth/github/callback`;
+
+  const store = providerStore ?? (await createProviderConfigStore(env));
+  const dynamic = await getProviderConfig(store, GITHUB_APP_PROVIDER_ID, encryptionKey);
+  if (dynamic) {
+    return { clientId: dynamic.clientId, clientSecret: dynamic.clientSecret, encryptionKey, redirectUri };
+  }
+
+  const clientId = env?.PORTALESS_GITHUB_APP_CLIENT_ID;
+  const clientSecret = env?.PORTALESS_GITHUB_APP_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return null;
+  return { clientId, clientSecret, encryptionKey, redirectUri };
+}
+
+export async function beginGitHubOAuth(cfg: GitHubOAuthConfig, store: DeploymentOAuthStore, userId: string): Promise<string> {
+  const state = randomUrlSafe(32);
+  const codeVerifier = randomUrlSafe(48);
+  await store.saveState({ state, provider: GITHUB_PROVIDER, codeVerifier, userId,
+    expiresAt: new Date(Date.now() + STATE_TTL_MS).toISOString() });
+  const url = new URL("https://github.com/login/oauth/authorize");
+  url.searchParams.set("client_id", cfg.clientId);
+  url.searchParams.set("redirect_uri", cfg.redirectUri);
+  url.searchParams.set("state", state);
+  url.searchParams.set("code_challenge", await pkceChallenge(codeVerifier));
+  url.searchParams.set("code_challenge_method", "S256");
+  return url.toString();
+}
+
+export type CallbackResult =
+  | { ok: true; accountLogin: string }
+  | { ok: false; status: number; error: string };
+
+export async function completeGitHubOAuth(
+  cfg: GitHubOAuthConfig, store: DeploymentOAuthStore, params: { code: string | null; state: string | null }, userId: string
+): Promise<CallbackResult> {
+  if (!params.code || !params.state) return { ok: false, status: 400, error: "Faltan code o state" };
+  const rec = await store.consumeState(params.state);
+  if (!rec || rec.provider !== GITHUB_PROVIDER) return { ok: false, status: 400, error: "state invalido, vencido o ya usado" };
+  if (rec.userId !== userId) return { ok: false, status: 403, error: "El state pertenece a otra sesion" };
+
+  const f = cfg.fetchImpl ?? fetch;
+  let tok: any;
+  try {
+    const res = await f("https://github.com/login/oauth/access_token", {
+      method: "POST",
+      headers: { accept: "application/json", "content-type": "application/json" },
+      body: JSON.stringify({ client_id: cfg.clientId, client_secret: cfg.clientSecret,
+        code: params.code, redirect_uri: cfg.redirectUri, code_verifier: rec.codeVerifier }),
+    });
+    tok = await res.json();
+    if (!res.ok || tok.error || !tok.access_token) {
+      return { ok: false, status: 502, error: `GitHub rechazo el intercambio: ${tok.error_description || tok.error || res.status}` };
+    }
+  } catch (e) {
+    return { ok: false, status: 502, error: `Error de red contra GitHub: ${(e as Error).message}` };
+  }
+
+  let login = "";
+  try {
+    const u = await f("https://api.github.com/user", {
+      headers: { authorization: `Bearer ${tok.access_token}`, accept: "application/vnd.github+json", "user-agent": "portaless" },
+    });
+    if (u.ok) login = (await u.json()).login ?? "";
+  } catch { /* login es informativo, no bloquea */ }
+
+  const t = Date.now();
+  await store.saveCredential({
+    provider: GITHUB_PROVIDER,
+    accountLogin: login,
+    accessTokenEnc: await encryptToken(tok.access_token, cfg.encryptionKey),
+    refreshTokenEnc: tok.refresh_token ? await encryptToken(tok.refresh_token, cfg.encryptionKey) : null,
+    accessExpiresAt: tok.expires_in ? new Date(t + tok.expires_in * 1000).toISOString() : null,
+    refreshExpiresAt: tok.refresh_token_expires_in ? new Date(t + tok.refresh_token_expires_in * 1000).toISOString() : null,
+    connectedBy: userId,
+    updatedAt: new Date(t).toISOString(),
+  });
+  return { ok: true, accountLogin: login };
+}
+
+type StoredCredential = NonNullable<Awaited<ReturnType<DeploymentOAuthStore["getCredential"]>>>;
+
+/** Uso server-side exclusivo (Tarea 2). Nunca exponer por HTTP. */
+export async function getGitHubAccessToken(cfg: GitHubOAuthConfig, store: DeploymentOAuthStore): Promise<string | null> {
+  const c = await store.getCredential(GITHUB_PROVIDER);
+  if (!c) return null;
+  if (c.accessExpiresAt && Date.parse(c.accessExpiresAt) - Date.now() < 60_000) {
+    return refreshGitHubAccessToken(cfg, store, c);
+  }
+  return decryptToken(c.accessTokenEnc, cfg.encryptionKey);
+}
+
+/**
+ * Renueva el access token (ghu_) usando el refresh token (ghr_) guardado.
+ * GitHub App user-to-server: rota AMBOS tokens en cada refresh -- el
+ * refresh_token anterior queda invalido despues de usarse una vez. Devuelve
+ * null (sin lanzar) si no hay refresh token, si ya vencio, o si GitHub
+ * rechaza el intercambio -- mismo principio de fallo silencioso que ya
+ * tenia getGitHubAccessToken para el token vencido.
+ */
+async function refreshGitHubAccessToken(
+  cfg: GitHubOAuthConfig,
+  store: DeploymentOAuthStore,
+  c: StoredCredential
+): Promise<string | null> {
+  if (!c.refreshTokenEnc) return null;
+  if (c.refreshExpiresAt && Date.parse(c.refreshExpiresAt) <= Date.now()) return null;
+
+  const f = cfg.fetchImpl ?? fetch;
+  const refreshToken = await decryptToken(c.refreshTokenEnc, cfg.encryptionKey);
+  let tok: any;
+  try {
+    const res = await f("https://github.com/login/oauth/access_token", {
+      method: "POST",
+      headers: { accept: "application/json", "content-type": "application/json" },
+      body: JSON.stringify({
+        client_id: cfg.clientId,
+        client_secret: cfg.clientSecret,
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+      }),
+    });
+    tok = await res.json();
+    if (!res.ok || tok.error || !tok.access_token) return null;
+  } catch {
+    return null;
+  }
+
+  const t = Date.now();
+  await store.saveCredential({
+    ...c,
+    accessTokenEnc: await encryptToken(tok.access_token, cfg.encryptionKey),
+    refreshTokenEnc: tok.refresh_token ? await encryptToken(tok.refresh_token, cfg.encryptionKey) : c.refreshTokenEnc,
+    accessExpiresAt: tok.expires_in ? new Date(t + tok.expires_in * 1000).toISOString() : null,
+    refreshExpiresAt: tok.refresh_token_expires_in
+      ? new Date(t + tok.refresh_token_expires_in * 1000).toISOString()
+      : c.refreshExpiresAt,
+    updatedAt: new Date(t).toISOString(),
+  });
+
+  return tok.access_token;
+}

@@ -1,0 +1,73 @@
+{
+  "name": "portaless",
+  "version": "0.1.0-rc.2",
+  "description": "Portaless: CMS ligero open source basado en Astro, sin hosting pagado, con modulo de comercio opcional, Trust Layer para agentes de IA, dashboard modular con skins, Atomic Elements",
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "astro dev",
+    "start": "tsx scripts/start-docker.mjs",
+    "start:self-host": "tsx scripts/start-docker.mjs",
+    "self-host:dev": "PORTALESS_SQLITE_PATH=./portaless.db PORTALESS_PUBLIC_URL=http://localhost:3000 tsx scripts/start-docker.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "setup": "tsx scripts/setup.mjs",
+    "setup:d1": "tsx scripts/setup-d1.mjs",
+    "migrate": "tsx scripts/migrate.mjs",
+    "test:email": "node --import tsx scripts/test-auth-email.mjs",
+    "doctor": "tsx scripts/doctor.mjs",
+    "migrate:d1": "tsx scripts/migrate-d1.mjs",
+    "staging:create": "node node_modules/tsx/dist/cli.mjs scripts/staging/create.mjs",
+    "staging:destroy": "node scripts/staging/destroy.mjs",
+    "staging:docker:create": "node --import tsx scripts/staging/docker.mjs create",
+    "staging:docker:destroy": "node --import tsx scripts/staging/docker.mjs destroy",
+    "mcp": "tsx packages/mcp-server/src/index.ts",
+    "mcp:http": "PORTALESS_MCP_TRANSPORT=http tsx packages/mcp-server/src/index.ts",
+    "test:browser": "playwright test",
+    "generate-schema": "node scripts/generate-schema.mjs",
+    "publish": "tsx scripts/publish-site.mjs",
+    "test": "vitest run",
+    "backup": "node node_modules/tsx/dist/cli.mjs scripts/backup-node.mjs",
+    "test:resources": "node node_modules/tsx/dist/cli.mjs scripts/resource-budget.mjs",
+    "test:release": "node scripts/verify-release.mjs",
+    "verify:runtime": "node node_modules/tsx/dist/cli.mjs scripts/verify-runtime-profile.mjs",
+    "verify:claims": "node scripts/verify-claims.mjs",
+    "check:boundaries": "node scripts/check-architecture-boundaries.mjs --strict",
+    "check:boundaries:report": "node scripts/check-architecture-boundaries.mjs --report"
+  },
+  "dependencies": {
+    "@noble/post-quantum": "^0.5.0",
+    "@portaless/plugin-sdk": "https://github.com/geroiloyola/portaless-plugin-sdk/releases/download/v0.1.0/portaless-plugin-sdk-0.1.0.tgz",
+    "@verared/apw": "0.1.0",
+    "@verared/cloud-images": "0.1.0",
+    "@verared/identity-atproto": "0.1.0",
+    "@verared/local-trust": "0.1.0",
+    "@verared/net": "0.1.0",
+    "@verared/reputation": "0.1.0",
+    "@verared/trust-layer": "0.1.0",
+    "astro": "^7.3.3",
+    "better-sqlite3": "^12.0.0",
+    "canonicalize": "^2.0.0",
+    "tsx": "^4.23.13",
+    "web-bot-auth": "^0.1.0"
+  },
+  "overrides": {
+    "@portaless/plugin-sdk": "$@portaless/plugin-sdk",
+    "@portaless/templates": "$@portaless/templates",
+    "@verared/spec": "$@verared/spec"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@portaless/templates": "https://github.com/geroiloyola/portaless-templates/releases/download/v0.1.0/portaless-templates-0.1.0.tgz",
+    "@verared/spec": "https://github.com/verared/vera-trust-spec/releases/download/v0.1.0-draft.1/verared-spec-0.1.0-draft.1.tgz",
+    "@vitest/coverage-v8": "^5.0.5",
+    "typescript": "~5.6.3",
+    "vitest": "^5.0.5"
+  }
+}

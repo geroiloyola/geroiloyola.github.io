@@ -1,0 +1,9 @@
+{
+  "skin": "tienda",
+  "extends": "base",
+  "tokens": {
+    "accent": "#a06bff",
+    "accentText": "#6B3FD4",
+    "accent2": "#6c4dff"
+  }
+}

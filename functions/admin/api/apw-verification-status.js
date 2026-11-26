@@ -1,0 +1,165 @@
+// functions/admin/api/apw-verification-status.js
+//
+// Checklist diferido del dashboard (Fase 2 del onboarding, ver ROADMAP.md
+// seccion "Onboarding de un click: Wizard + Checklist diferido"). Consulta
+// si el dominio de ESTE sitio ya tiene publicado su registro TXT de
+// Protocol APW, via resolveApwManifest() (ya implementado en
+// packages/apw-resolver, DNS-over-HTTPS real contra Cloudflare 1.1.1.1).
+//
+// "Verificado" aqui significa unicamente: existe un manifiesto APW valido
+// en el TXT record _apw.<dominio> de la URL con la que se sirvio esta
+// request. No compara contra un siteId esperado de antemano -- si alguien
+// controla el DNS del dominio lo suficiente como para publicar un TXT
+// record ahi, esa es la senal de propiedad real que Protocol APW define.
+//
+// v0.0.9.30: ademas devuelve `txtRecord` ({ name, value, bytes }): el
+// registro exacto que el usuario tiene que pegar en su proveedor de DNS,
+// generado con buildApwManifest()/serializeApwManifest() -- las mismas
+// funciones que usa packages/apw-resolver/src/dnslink/cli.mjs. Antes esto
+// solo se podia obtener corriendo el CLI a mano, lo que dejaba afuera a
+// un usuario no tecnico. `withinLimit` avisa si el valor supera los
+// ~512 bytes practicos de una respuesta DNS (mismo limite que valida el CLI).
+//
+// APW v1.2 (B2): si el sitio ya tiene identidad did:apw, el TXT sugerido es
+// un manifiesto v2 con la huella `k` de su clave, y la respuesta agrega
+// `identity` con el resultado de resolveApwIdentity() (TXT + did.json). Si
+// no hay identidad, todo sigue igual que antes (manifiesto v1).
+//
+// APW v1.2 (B6): si el historial encadenado ya tiene entradas, el TXT sugerido
+// incluye `h` (hash de la ultima entrada) y `identity.h` lo informa. `h`
+// cambia con cada atestacion nueva: entre una actualizacion del TXT y la
+// siguiente, las entradas nuevas todavia no estan ancladas en el DNS.
+//
+// APW v1.2 (B3): los campos salen de buildSiteManifest(), la misma funcion
+// que usa /.well-known/apw-manifest.jws, para que TXT y manifiesto firmado
+// no puedan divergir.
+//
+// ERRATA E-10 (automatizacion de h): `anchor` informa el estado del anclaje
+// de la cabeza del historial en el DNS de forma estructurada:
+//   { status, publishedH, localH, localSeq }
+// status: no_identity | no_txt | no_history | txt_without_h | up_to_date | stale.
+// "stale" = el TXT publica un h distinto del actual: hay entradas sin anclar
+// (el valor sugerido txtRecord ya trae el h nuevo listo para pegar). Para
+// anclar sin tocar el DNS quedan los testigos (5.7) y el CLI
+// dnslink/cli.mjs --anchor --domain <d>.
+//
+// Diseno deliberado: esto NUNCA bloquea nada. Si el DNS no propago todavia
+// (puede tardar minutos u horas), el sitio sigue funcionando exactamente
+// igual -- el checklist es informativo, no un gate.
+import {
+  resolveApwManifest,
+  resolveApwIdentity,
+  serializeApwManifest,
+  jwkThumbprint,
+  APW_TXT_PREFIX,
+} from "@verared/apw/resolver";
+import { createSiteIdentityStore, createAttestationLogStore } from "@portaless/trust-storage-adapters";
+import { buildSiteManifest } from "@verared/apw/did-apw";
+import { publicOriginFromEnv } from "../../_shared/public-origin.js";
+
+const TXT_PRACTICAL_LIMIT_BYTES = 512;
+const SITE_ID = "default";
+
+function requireAdmin(context) {
+  // Mismo contrato que el resto de /admin: _middleware.js expone context.data.user.
+  const user = context.data?.user;
+  if (!user) return { error: json({ error: "No autenticado" }, 401) };
+  return { user };
+}
+
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+}
+
+function buildSuggestedTxtRecord(domain, k, h) {
+  const value = serializeApwManifest(buildSiteManifest(domain, k, h));
+  const bytes = new TextEncoder().encode(value).length;
+  return {
+    name: `${APW_TXT_PREFIX}.${domain}`,
+    type: "TXT",
+    value,
+    bytes,
+    withinLimit: bytes <= TXT_PRACTICAL_LIMIT_BYTES,
+  };
+}
+
+async function loadKeyThumbprint(env) {
+  try {
+    const store = await createSiteIdentityStore(env);
+    const identity = await store.get(SITE_ID);
+    if (!identity) return null;
+    return { did: identity.did, k: await jwkThumbprint(identity.publicKeyJwk) };
+  } catch {
+    return null;
+  }
+}
+
+async function loadHistoryHead(env) {
+  try {
+    const log = await createAttestationLogStore(env);
+    const head = await log.head(SITE_ID);
+    return head;
+  } catch {
+    return null;
+  }
+}
+
+// E-10: estado del anclaje de `h` en el DNS, derivado de lo que ya cargo el
+// endpoint (TXT resuelto + cabeza local). Sin llamadas de red adicionales.
+function buildAnchorStatus(local, head, result) {
+  if (!local) return { status: "no_identity", publishedH: result.manifest?.h ?? null, localH: null, localSeq: null };
+  const localH = head?.entryHash ?? null;
+  const localSeq = head?.seq ?? null;
+  if (!result.resolved || !result.manifest) return { status: "no_txt", publishedH: null, localH, localSeq };
+  const publishedH = result.manifest.h ?? null;
+  if (!localH) return { status: "no_history", publishedH, localH: null, localSeq: null };
+  if (!publishedH) return { status: "txt_without_h", publishedH: null, localH, localSeq };
+  return { status: publishedH === localH ? "up_to_date" : "stale", publishedH, localH, localSeq };
+}
+
+export async function onRequestGet(context) {
+  const g = requireAdmin(context);
+  if (g.error) return g.error;
+
+  const local = await loadKeyThumbprint(context.env);
+  const configuredHost = publicOriginFromEnv(context.env)
+    ? new URL(publicOriginFromEnv(context.env)).hostname
+    : null;
+  const requestHost = new URL(context.request.url).hostname;
+  const observedHost = configuredHost ?? requestHost;
+  const identityDomain = local?.did?.startsWith("did:apw:")
+    ? local.did.slice("did:apw:".length)
+    : null;
+  // M-03: con identidad, el dominio del TXT sale SIEMPRE del DID. El Host
+  // solo sirve para un bootstrap sin identidad (o la URL publica declarada).
+  const domain = identityDomain ?? configuredHost ?? requestHost;
+  const hostMismatch = Boolean(identityDomain && observedHost !== identityDomain);
+
+  const result = await resolveApwManifest(domain);
+  const head = local ? await loadHistoryHead(context.env) : null;
+  const h = head?.entryHash ?? null;
+  const identity = local ? await resolveApwIdentity(domain) : null;
+
+  return json({
+    domain,
+    hostMismatch,
+    requestHost: observedHost,
+    warning: hostMismatch
+      ? `El host publico (${configuredHost}) no coincide con el dominio de la identidad (${identityDomain}). El TXT se genera para la identidad.`
+      : null,
+    verified: result.resolved,
+    reason: result.reason,
+    manifest: result.manifest ?? null,
+    txtRecord: buildSuggestedTxtRecord(domain, local?.k, h),
+    anchor: buildAnchorStatus(local, head, result),
+    identity: local
+      ? {
+          did: local.did,
+          k: local.k,
+          h,
+          verified: identity?.verified ?? false,
+          reason: identity?.reason ?? null,
+        }
+      : null,
+  });
+}

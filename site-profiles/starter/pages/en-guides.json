@@ -1,0 +1,117 @@
+{
+  "version": "0.1",
+  "slug": "en-guides",
+  "title": "Practical Guides — TypeScript, AI Agents & Web Architecture",
+  "description": "Structured hands-on learning tracks on modular TypeScript, AI agents with MCP and Web Bot Auth, and resilient web architecture.",
+  "theme": "portaless-nocturno",
+  "root": [
+    {
+      "id": "en-guides-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "Practical web engineering guides",
+        "subtitle": "Direct, production-tested learning tracks covering strict TypeScript architecture, verifiable AI agent protocols, and fast websites without fragile dependencies.",
+        "ctaLabel": "Leer en Español →",
+        "ctaHref": "/pages/guias/"
+      }
+    },
+    {
+      "id": "en-guides-ts-h",
+      "type": "Heading",
+      "props": {
+        "text": "Track 1 — TypeScript & modular package design",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "TypeScript",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-guides-ts-grid",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "items": "package :: Strict import boundaries :: Preventing silent coupling across packages and blocking deep src/ imports with automated boundary gates.\nserver :: Reproducible npm publishing :: Exact semver pinning, lockfile sha512 integrity, and verifiable provenance in GitHub Actions."
+      }
+    },
+    {
+      "id": "en-guides-ai-h",
+      "type": "Heading",
+      "props": {
+        "text": "Track 2 — AI Agents, MCP & Web Bot Auth",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "AI & Agents",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-guides-ai-grid",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "items": "bot :: Permission-scoped MCP servers :: Designing safe agent tools that write drafts without bypassing site governance.\nshield :: Cryptographic identity & Local Trust Protocol :: Separating anonymous traffic, signed agents, and per-route policies (allow, charge, block)."
+      }
+    },
+    {
+      "id": "en-guides-web-h",
+      "type": "Heading",
+      "props": {
+        "text": "Track 3 — Resilient Web Architecture",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Web Architecture",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-guides-web-grid",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "items": "shield :: Strict CSP without unsafe-inline :: Moving inline handlers into bundled modules and enforcing zero violations in Playwright.\nserver :: Static, Edge & Self-Host parity :: Sharing handlers and contracts cleanly across GitHub Pages, Cloudflare Pages, and Node 24."
+      }
+    },
+    {
+      "id": "en-guides-posts",
+      "type": "PostList",
+      "props": {
+        "title": "Published articles",
+        "limit": 10
+      }
+    },
+    {
+      "id": "en-guides-nav",
+      "type": "Columns",
+      "props": { "count": 2, "gap": 16 },
+      "columnSlots": [
+        [
+          {
+            "id": "en-guides-btn-portaless",
+            "type": "Button",
+            "props": {
+              "label": "Open Portaless guide",
+              "href": "/pages/en-portaless/",
+              "variant": "solid",
+              "size": "sm"
+            }
+          }
+        ],
+        [
+          {
+            "id": "en-guides-btn-home",
+            "type": "Button",
+            "props": {
+              "label": "← Back to English home",
+              "href": "/pages/en/",
+              "variant": "outline",
+              "size": "sm"
+            }
+          }
+        ]
+      ]
+    }
+  ]
+}

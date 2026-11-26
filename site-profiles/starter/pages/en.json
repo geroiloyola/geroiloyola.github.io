@@ -1,0 +1,161 @@
+{
+  "version": "0.1",
+  "slug": "en",
+  "title": "Geroi Loyola — TypeScript, AI, Agents & Web Architecture",
+  "description": "Personal creator and technical education hub focused on TypeScript, AI agents, verifiable web protocols, and the Portaless, Verared, Gerarion, and Tokenless ecosystem.",
+  "theme": "portaless-nocturno",
+  "root": [
+    {
+      "id": "en-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "TypeScript, AI, Agents & Web Architecture without black boxes",
+        "subtitle": "I am Geroi Loyola. I build open-source web tools and publish practical engineering guides on modern TypeScript, verifiable protocols for AI agents, and resilient web architecture.",
+        "ctaLabel": "Explore practical guides",
+        "ctaHref": "/pages/en-guides/"
+      }
+    },
+    {
+      "id": "en-quick-actions",
+      "type": "Columns",
+      "props": { "count": 3, "gap": 16 },
+      "columnSlots": [
+        [
+          {
+            "id": "en-btn-ecosystem",
+            "type": "Button",
+            "props": {
+              "label": "Explore ecosystem",
+              "href": "/pages/en-ecosystem/",
+              "variant": "outline",
+              "size": "sm"
+            }
+          }
+        ],
+        [
+          {
+            "id": "en-btn-portaless",
+            "type": "Button",
+            "props": {
+              "label": "Master Portaless",
+              "href": "/pages/en-portaless/",
+              "variant": "outline",
+              "size": "sm"
+            }
+          }
+        ],
+        [
+          {
+            "id": "en-btn-es",
+            "type": "Button",
+            "props": {
+              "label": "Versión en Español →",
+              "href": "/",
+              "variant": "outline",
+              "size": "sm"
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "id": "en-ecosystem-h",
+      "type": "Heading",
+      "props": {
+        "text": "Four pieces of one open ecosystem",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Ecosystem",
+        "align": "left",
+        "size": "lg"
+      }
+    },
+    {
+      "id": "en-ecosystem-grid",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "items": "server :: Portaless :: Modern Astro-based web CMS with strict CSP (zero unsafe-inline), native visual editor (Atomic Elements), SQLite/D1 persistence, and Node, Cloudflare Pages, or GitHub Pages deployment.\nshield :: Verared :: Open trust infrastructure, verifiable cryptographic identity (did:apw), Web Bot Auth, and Local Trust Protocol packages (@verared/* on npm).\npackage :: Gerarion :: [Editable] Dedicated space to explain the problem Gerarion solves, its core architecture, and how it connects with the rest of the ecosystem.\nbot :: Tokenless :: [Editable] Dedicated space to document Tokenless purpose, architecture, and practical real-world use cases."
+      }
+    },
+    {
+      "id": "en-ecosystem-links",
+      "type": "Columns",
+      "props": { "count": 2, "gap": 16 },
+      "columnSlots": [
+        [
+          {
+            "id": "en-btn-eco-detail",
+            "type": "Button",
+            "props": {
+              "label": "Read the full ecosystem breakdown",
+              "href": "/pages/en-ecosystem/",
+              "variant": "solid",
+              "size": "sm"
+            }
+          }
+        ],
+        [
+          {
+            "id": "en-btn-portaless-guide",
+            "type": "Button",
+            "props": {
+              "label": "Portaless practical guide",
+              "href": "/pages/en-portaless/",
+              "variant": "outline",
+              "size": "sm"
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "id": "en-learning-h",
+      "type": "Heading",
+      "props": {
+        "text": "Learning tracks & hands-on engineering guides",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Technical education",
+        "align": "left",
+        "size": "lg"
+      }
+    },
+    {
+      "id": "en-learning-grid",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "items": "package :: TypeScript & clean boundaries :: Designing decoupled packages, explicit contracts, and zero circular dependencies across repositories.\nbot :: AI Agents, MCP & Web Bot Auth :: Connecting MCP clients under atomic permissions and authenticating web agents with cryptographic signatures.\nserver :: Web Architecture & strict CSP :: Getting the most out of Portaless from scratch: editing the home page visually, choosing runtimes, and eliminating inline scripts."
+      }
+    },
+    {
+      "id": "en-posts",
+      "type": "PostList",
+      "props": {
+        "title": "Latest technical articles",
+        "limit": 6
+      }
+    },
+    {
+      "id": "en-contact-h",
+      "type": "Heading",
+      "props": {
+        "text": "Open source & updates",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Community",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-contact-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "This hub runs 100% on Portaless (starter profile + Atomic Elements blocks). Follow public ecosystem repositories on GitHub (github.com/geroiloyola) or edit this block whenever you want to publish official contact channels."
+      }
+    }
+  ]
+}
