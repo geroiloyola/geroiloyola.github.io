@@ -8,6 +8,11 @@
     "code": "es",
     "href": "/pages/guides/"
   },
+  "flairs": [
+    "Guides",
+    "Portaless",
+    "Web"
+  ],
   "root": [
     {
       "id": "en-guides-hero",

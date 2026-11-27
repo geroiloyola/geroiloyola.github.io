@@ -8,6 +8,11 @@
     "code": "es",
     "href": "/pages/projects/"
   },
+  "flairs": [
+    "Portaless",
+    "Open Source",
+    "Web"
+  ],
   "root": [
     {
       "id": "en-proj-hero",

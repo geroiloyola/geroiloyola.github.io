@@ -8,6 +8,10 @@
     "code": "en",
     "href": "/pages/en-contributions/"
   },
+  "flairs": [
+    "Open Source",
+    "Portaless"
+  ],
   "root": [
     {
       "id": "contrib-hero",

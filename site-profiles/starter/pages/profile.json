@@ -8,6 +8,9 @@
     "code": "en",
     "href": "/pages/en-profile/"
   },
+  "flairs": [
+    "Web"
+  ],
   "root": [
     {
       "id": "prof-hero",

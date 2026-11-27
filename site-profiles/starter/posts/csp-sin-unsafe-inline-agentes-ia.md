@@ -2,6 +2,7 @@
 title: "Cómo diseñar una web moderna sin 'unsafe-inline' en CSP (y por qué importa para agentes e IA)"
 description: "Por qué eliminar 'unsafe-inline' de script-src es la base de una arquitectura web moderna, cómo lograrlo en Astro y por qué protege tanto a humanos como a agentes."
 pubDate: 2026-11-26
+flairs: ["Web", "Portaless", "Guides"]
 ---
 
 # Cómo diseñar una web moderna sin `'unsafe-inline'` en CSP (y por qué importa para agentes e IA)

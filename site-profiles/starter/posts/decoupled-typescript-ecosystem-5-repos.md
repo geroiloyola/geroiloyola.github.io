@@ -2,6 +2,7 @@
 title: "Building a decoupled TypeScript ecosystem: lessons from splitting Portaless and Verared into 5 repos"
 description: "Practical architecture lessons from splitting a monolithic CMS + trust stack into 5 independent repositories with strict unidirectional import boundaries and sha512-pinned npm packages."
 pubDate: 2026-11-26
+flairs: ["Open Source", "Portaless"]
 ---
 
 # Building a decoupled TypeScript ecosystem: lessons from splitting Portaless and Verared into 5 repos
