@@ -4,6 +4,10 @@
   "title": "Projects — Open Source y Experiencia · Geroi Loyola",
   "description": "Proyectos open source (Portaless, Verared, Gerarion, Tokenless) y portafolio/CV editable de sistemas privados y experiencia técnica.",
   "theme": "geroi-editorial",
+  "alternateLang": {
+    "code": "en",
+    "href": "/pages/en-projects/"
+  },
   "root": [
     {
       "id": "proj-hero",
@@ -12,9 +16,7 @@
         "variant": "spotlight",
         "size": "lg",
         "title": "Projects — Open Source y sistemas en producción",
-        "subtitle": "Cuatro piezas abiertas diseñadas con fronteras limpias, más un espacio estructurado tipo CV para documentar proyectos privados y experiencia profesional.",
-        "ctaLabel": "Read in English →",
-        "ctaHref": "/pages/en-projects/"
+        "subtitle": "Cuatro piezas abiertas diseñadas con fronteras limpias, más un espacio estructurado tipo CV para documentar proyectos privados y experiencia profesional."
       }
     },
     {

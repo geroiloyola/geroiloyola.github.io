@@ -4,6 +4,10 @@
   "title": "Contributions — FOSS, Specs & Side-Projects · Geroi Loyola",
   "description": "Open-source community contributions: Portaless and Verared ecosystem, CC BY 4.0 specifications, @verared/* npm packages, tools, and experiments.",
   "theme": "geroi-editorial",
+  "alternateLang": {
+    "code": "es",
+    "href": "/pages/contributions/"
+  },
   "root": [
     {
       "id": "en-contrib-hero",
@@ -12,9 +16,7 @@
         "variant": "spotlight",
         "size": "lg",
         "title": "Contributions — FOSS, open specs & technical experiments",
-        "subtitle": "Open-source software, CC BY 4.0 protocol specifications, reusable npm packages, and public experiments built to be audited and reused.",
-        "ctaLabel": "Leer en Español →",
-        "ctaHref": "/pages/contributions/"
+        "subtitle": "Open-source software, CC BY 4.0 protocol specifications, reusable npm packages, and public experiments built to be audited and reused."
       }
     },
     {

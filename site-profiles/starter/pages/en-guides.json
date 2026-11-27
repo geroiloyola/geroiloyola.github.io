@@ -4,6 +4,10 @@
   "title": "Guides — Practical Playbooks for Portaless, TypeScript & AI · Geroi Loyola",
   "description": "Step-by-step playbooks: installing and mastering Portaless (GitHub Pages, Cloudflare, Docker, /admin/editor), modular TypeScript, MCP agents, and strict CSP.",
   "theme": "geroi-editorial",
+  "alternateLang": {
+    "code": "es",
+    "href": "/pages/guides/"
+  },
   "root": [
     {
       "id": "en-guides-hero",
@@ -12,9 +16,7 @@
         "variant": "spotlight",
         "size": "lg",
         "title": "Guides — Hands-on engineering playbooks",
-        "subtitle": "Direct, practical guides to deploy and master Portaless, structure decoupled TypeScript packages, connect MCP agents, and enforce strict CSP in production.",
-        "ctaLabel": "Leer en Español →",
-        "ctaHref": "/pages/guides/"
+        "subtitle": "Direct, practical guides to deploy and master Portaless, structure decoupled TypeScript packages, connect MCP agents, and enforce strict CSP in production."
       }
     },
     {
@@ -86,9 +88,21 @@
         "title": "Related reading in Publications",
         "buttonStyle": "outline",
         "links": [
-          { "label": "Strict CSP & AI agents →", "url": "/blog/csp-sin-unsafe-inline-agentes-ia/", "enabled": true },
-          { "label": "Decoupled TypeScript in 5 repos →", "url": "/blog/decoupled-typescript-ecosystem-5-repos/", "enabled": true },
-          { "label": "All Publications →", "url": "/publications/", "enabled": true }
+          {
+            "label": "Strict CSP & AI agents →",
+            "url": "/blog/csp-sin-unsafe-inline-agentes-ia/",
+            "enabled": true
+          },
+          {
+            "label": "Decoupled TypeScript in 5 repos →",
+            "url": "/blog/decoupled-typescript-ecosystem-5-repos/",
+            "enabled": true
+          },
+          {
+            "label": "All Publications →",
+            "url": "/publications/",
+            "enabled": true
+          }
         ]
       }
     }

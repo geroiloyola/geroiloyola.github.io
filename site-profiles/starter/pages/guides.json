@@ -4,6 +4,10 @@
   "title": "Guides — Playbooks prácticos de Portaless, TypeScript e IA · Geroi Loyola",
   "description": "Guías paso a paso y playbooks públicos: instalar y exprimir Portaless (GitHub Pages, Cloudflare, Docker, /admin/editor), TypeScript modular, agentes MCP y CSP estricto.",
   "theme": "geroi-editorial",
+  "alternateLang": {
+    "code": "en",
+    "href": "/pages/en-guides/"
+  },
   "root": [
     {
       "id": "guides-hero",
@@ -12,9 +16,7 @@
         "variant": "spotlight",
         "size": "lg",
         "title": "Guides — Playbooks técnicos paso a paso",
-        "subtitle": "Guías directas al grano para desplegar y exprimir Portaless, diseñar paquetes TypeScript sin ciclos, conectar agentes MCP y mantener CSP estricto en producción.",
-        "ctaLabel": "Read in English →",
-        "ctaHref": "/pages/en-guides/"
+        "subtitle": "Guías directas al grano para desplegar y exprimir Portaless, diseñar paquetes TypeScript sin ciclos, conectar agentes MCP y mantener CSP estricto en producción."
       }
     },
     {
@@ -86,9 +88,21 @@
         "title": "Artículos relacionados en Publications",
         "buttonStyle": "outline",
         "links": [
-          { "label": "CSP sin unsafe-inline y agentes IA →", "url": "/blog/csp-sin-unsafe-inline-agentes-ia/", "enabled": true },
-          { "label": "Ecosistema TypeScript en 5 repos →", "url": "/blog/decoupled-typescript-ecosystem-5-repos/", "enabled": true },
-          { "label": "Ver todas las Publications →", "url": "/publications/", "enabled": true }
+          {
+            "label": "CSP sin unsafe-inline y agentes IA →",
+            "url": "/blog/csp-sin-unsafe-inline-agentes-ia/",
+            "enabled": true
+          },
+          {
+            "label": "Ecosistema TypeScript en 5 repos →",
+            "url": "/blog/decoupled-typescript-ecosystem-5-repos/",
+            "enabled": true
+          },
+          {
+            "label": "Ver todas las Publications →",
+            "url": "/publications/",
+            "enabled": true
+          }
         ]
       }
     }

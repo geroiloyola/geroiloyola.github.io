@@ -4,6 +4,10 @@
   "title": "Geroi Loyola — TypeScript, IA, Agentes y Arquitectura Web",
   "description": "Hub personal editorial y mini-wiki de Geroi Loyola: proyectos open source (Portaless, Verared, Gerarion, Tokenless), publicaciones técnicas y guías prácticas.",
   "theme": "geroi-editorial",
+  "alternateLang": {
+    "code": "en",
+    "href": "/pages/en/"
+  },
   "root": [
     {
       "id": "explore-hero",

@@ -4,6 +4,10 @@
   "title": "Profile — Mini-Wiki Personal · Geroi Loyola",
   "description": "Mini-wiki personal de Geroi Loyola: bio editable, qué construyo ahora (Now), stack, principios de arquitectura y canales de contacto.",
   "theme": "geroi-editorial",
+  "alternateLang": {
+    "code": "en",
+    "href": "/pages/en-profile/"
+  },
   "root": [
     {
       "id": "prof-hero",
@@ -12,9 +16,7 @@
         "variant": "spotlight",
         "size": "lg",
         "title": "Geroi Loyola — Profile & Mini-Wiki",
-        "subtitle": "Ingeniería web, TypeScript, agentes de IA y software abierto. Un mapa vivo de lo que construyo ahora, las herramientas que uso y los principios con los que diseño sistemas.",
-        "ctaLabel": "Read in English →",
-        "ctaHref": "/pages/en-profile/"
+        "subtitle": "Ingeniería web, TypeScript, agentes de IA y software abierto. Un mapa vivo de lo que construyo ahora, las herramientas que uso y los principios con los que diseño sistemas."
       }
     },
     {
