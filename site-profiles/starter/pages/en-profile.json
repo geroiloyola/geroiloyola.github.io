@@ -21,119 +21,103 @@
       "id": "en-prof-spacer-1",
       "type": "Spacer",
       "props": {
-        "height": 20
+        "height": 24
       }
     },
     {
-      "id": "en-prof-wiki-cols",
-      "type": "Columns",
+      "id": "en-prof-bio-h",
+      "type": "Heading",
       "props": {
-        "count": 2,
-        "ratio": "2-1",
-        "gap": 24
-      },
-      "columnSlots": [
-        [
-          {
-            "id": "en-prof-bio-h",
-            "type": "Heading",
-            "props": {
-              "text": "Bio",
-              "level": "h2",
-              "variant": "eyebrow",
-              "eyebrow": "About · Editable",
-              "align": "left"
-            }
-          },
-          {
-            "id": "en-prof-bio-p",
-            "type": "Paragraph",
-            "props": {
-              "text": "[Editable] Edit this paragraph in /admin/editor?slug=en-profile to share your background, focus areas, and the story behind your engineering work."
-            }
-          },
-          {
-            "id": "en-prof-now-h",
-            "type": "Heading",
-            "props": {
-              "text": "What I am building now (Now)",
-              "level": "h2",
-              "variant": "eyebrow",
-              "eyebrow": "Now",
-              "align": "left"
-            }
-          },
-          {
-            "id": "en-prof-now-grid",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "items": "server :: Portaless & Visual Elements :: Refining the CSS-first visual engine, ThemePack v2 dual-mode, and zero-inline-code visual editing.\nshield :: Verared (@verared/*) :: Maintaining the 7 Apache-2.0 Vera Trust Stack packages and verifiable web-agent protocols.\npackage :: Gerarion & Tokenless :: [Editable] Current milestones for the next pieces of the ecosystem."
-            }
-          },
-          {
-            "id": "en-prof-principles-h",
-            "type": "Heading",
-            "props": {
-              "text": "Architecture principles",
-              "level": "h2",
-              "variant": "eyebrow",
-              "eyebrow": "Engineering taste",
-              "align": "left"
-            }
-          },
-          {
-            "id": "en-prof-principles-grid",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "items": "shield :: Secure by default :: Strict CSP without unsafe-inline, explicit atomic permissions, and fail-closed boundaries.\nserver :: Simplicity & sovereignty :: Static HTML first, portable SQLite/D1, zero opaque lock-in across hosting providers.\npackage :: Explicit boundaries :: Small public contracts, reproducible tests, and zero internal cross-repo imports."
-            }
-          }
-        ],
-        [
-          {
-            "id": "en-prof-card-h",
-            "type": "Heading",
-            "props": {
-              "text": "Quick card",
-              "level": "h2",
-              "variant": "eyebrow",
-              "eyebrow": "Stack · Contact",
-              "align": "left"
-            }
-          },
-          {
-            "id": "en-prof-stack-p",
-            "type": "Paragraph",
-            "props": {
-              "text": "Daily stack: TypeScript, Astro, Node.js 24, SQLite / Cloudflare D1, Vitest, Playwright, Docker, MCP, and Web Bot Auth."
-            }
-          },
-          {
-            "id": "en-prof-contact-p",
-            "type": "Paragraph",
-            "props": {
-              "text": "[Editable] Contact & official channels: add your public email, GitHub (github.com/geroiloyola), or other verified links whenever you are ready."
-            }
-          },
-          {
-            "id": "en-prof-links",
-            "type": "LinkList",
-            "props": {
-              "title": "Site map",
-              "buttonStyle": "outline",
-              "links": [
-                { "label": "Explore (Home) →", "url": "/pages/en/", "enabled": true },
-                { "label": "Publications →", "url": "/publications/", "enabled": true },
-                { "label": "Projects →", "url": "/pages/en-projects/", "enabled": true },
-                { "label": "Contributions →", "url": "/pages/en-contributions/", "enabled": true },
-                { "label": "Guides →", "url": "/pages/en-guides/", "enabled": true }
-              ]
-            }
-          }
-        ]
-      ]
+        "text": "Bio",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "About · Editable",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-prof-bio-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "[Editable] Edit this paragraph in /admin/editor?slug=en-profile to share your background, focus areas, and the story behind your engineering work."
+      }
+    },
+    {
+      "id": "en-prof-spacer-2",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "en-prof-now-h",
+      "type": "Heading",
+      "props": {
+        "text": "What I am building now (Now)",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Now",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-prof-now-grid",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "items": "server :: Portaless & Visual Elements :: Refining the CSS-first visual engine, ThemePack v2 dual-mode, and zero-inline-code visual editing.\nshield :: Verared (@verared/*) :: Maintaining the 7 Apache-2.0 Vera Trust Stack packages and verifiable web-agent protocols.\npackage :: Gerarion & Tokenless :: [Editable] Current milestones for the next pieces of the ecosystem."
+      }
+    },
+    {
+      "id": "en-prof-spacer-3",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "en-prof-principles-h",
+      "type": "Heading",
+      "props": {
+        "text": "Core stack & architecture principles",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Engineering taste",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-prof-principles-grid",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "items": "package :: Daily stack :: TypeScript, Astro, Node.js 24, SQLite / Cloudflare D1, Vitest, Playwright, Docker, MCP, and Web Bot Auth.\nshield :: Secure by default :: Strict CSP without unsafe-inline, explicit atomic permissions, and fail-closed boundaries.\nserver :: Simplicity & sovereignty :: Static HTML first, explicit repository boundaries, and zero hosting lock-in."
+      }
+    },
+    {
+      "id": "en-prof-spacer-4",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "en-prof-contact-h",
+      "type": "Heading",
+      "props": {
+        "text": "Contact & channels",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Editable",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-prof-contact-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "[Editable] Add your public email, GitHub (github.com/geroiloyola), or other verified channels whenever you are ready."
+      }
     }
   ]
 }

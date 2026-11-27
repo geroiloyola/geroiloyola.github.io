@@ -21,7 +21,7 @@
       "id": "en-contrib-spacer-1",
       "type": "Spacer",
       "props": {
-        "height": 20
+        "height": 24
       }
     },
     {
@@ -65,40 +65,12 @@
       }
     },
     {
-      "id": "en-contrib-hobbies-cols",
-      "type": "Columns",
+      "id": "en-contrib-hobbies-grid",
+      "type": "FeatureGrid",
       "props": {
-        "count": 2,
-        "ratio": "2-1",
-        "gap": 24
-      },
-      "columnSlots": [
-        [
-          {
-            "id": "en-contrib-hobbies-grid",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "items": "bot :: MCP agent experiments :: Local tool servers with atomic capability checks and reproducible audit logs.\npackage :: [Editable] Side-project or upstream PR :: Ready-to-edit slot for third-party PRs, small utilities, and weekend CLI tools."
-            }
-          }
-        ],
-        [
-          {
-            "id": "en-contrib-sidebar-links",
-            "type": "LinkList",
-            "props": {
-              "title": "Keep exploring",
-              "buttonStyle": "outline",
-              "links": [
-                { "label": "View Projects →", "url": "/pages/en-projects/", "enabled": true },
-                { "label": "Read Publications →", "url": "/publications/", "enabled": true },
-                { "label": "Back to Explore →", "url": "/pages/en/", "enabled": true }
-              ]
-            }
-          }
-        ]
-      ]
+        "title": "",
+        "items": "bot :: MCP agent experiments :: Local tool servers with atomic capability checks and reproducible audit logs.\npackage :: [Editable] Side-project or upstream PR :: Ready-to-edit slot for third-party PRs, small utilities, and weekend CLI tools."
+      }
     }
   ]
 }

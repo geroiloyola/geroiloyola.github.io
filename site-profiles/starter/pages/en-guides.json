@@ -21,7 +21,7 @@
       "id": "en-guides-spacer-1",
       "type": "Spacer",
       "props": {
-        "height": 20
+        "height": 24
       }
     },
     {
@@ -42,7 +42,7 @@
       "props": {
         "title": "",
         "layout": "bento",
-        "items": "server :: 1. Deploy free on GitHub Pages or Cloudflare Pages :: Fork the repo, customize site-profiles/starter/, and ship static HTML with strict CSP (A-07). Add Cloudflare Pages + D1 or Docker self-hosting when you want the dynamic runtime and Trust Layer. :: span=2 :: featured\npackage :: 2. Visual Editor (/admin/editor) :: Edit your home page and subpages with all 17 Visual Elements (Bento Grid, Columns ratio 2-1, Hero, PostList) without hand-coding HTML.\nshield :: 3. ThemePack v2 Light/Dark :: Declare lightVars, darkVars, and editorial tokens (--font-display, --space-section, --elevation) checked against WCAG AA >= 4.5:1.\nbot :: 4. AI Agents via native MCP (19 tools) :: Connect Claude, ChatGPT, or any MCP client under atomic permissions to create pages, edit blocks, and switch themes with real audit trails. :: span=2 :: featured"
+        "items": "server :: 1. Deploy free on GitHub Pages or Cloudflare Pages :: Fork the repo, customize site-profiles/starter/, and ship static HTML with strict CSP (A-07). Add Cloudflare Pages + D1 or Docker self-hosting when you want the dynamic runtime and Trust Layer. :: span=2 :: featured\npackage :: 2. Visual Editor (/admin/editor) :: Edit your home page and subpages with all 17 Visual Elements (Bento Grid, Columns, Hero, PostList) without hand-coding HTML.\nshield :: 3. ThemePack v2 Light/Dark :: Declare lightVars, darkVars, and editorial tokens (--font-display, --space-section, --elevation) checked against WCAG AA >= 4.5:1.\nbot :: 4. AI Agents via native MCP (19 tools) :: Connect Claude, ChatGPT, or any MCP client under atomic permissions to create pages, edit blocks, and switch themes with real audit trails. :: span=2 :: featured"
       }
     },
     {
@@ -65,49 +65,32 @@
       }
     },
     {
-      "id": "en-guides-tracks-cols",
-      "type": "Columns",
+      "id": "en-guides-tracks-grid",
+      "type": "FeatureGrid",
       "props": {
-        "count": 2,
-        "ratio": "2-1",
-        "gap": 24
-      },
-      "columnSlots": [
-        [
-          {
-            "id": "en-guides-tracks-grid",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "items": "package :: TypeScript & repository boundaries :: How to split a monorepo into standalone packages with automated import boundary checks and zero cycles.\nshield :: Strict CSP without unsafe-inline :: Removing inline scripts and inline styles without sacrificing interactivity (theme toggle, navigation, and forms).\nbot :: Web Bot Auth & Local Trust Protocol :: Verifying did:apw identity and cryptographic agent signatures using @verared/*."
-            }
-          }
-        ],
-        [
-          {
-            "id": "en-guides-sidebar-h",
-            "type": "Heading",
-            "props": {
-              "text": "Related reading",
-              "level": "h3",
-              "align": "left"
-            }
-          },
-          {
-            "id": "en-guides-sidebar-links",
-            "type": "LinkList",
-            "props": {
-              "title": "",
-              "buttonStyle": "outline",
-              "links": [
-                { "label": "Strict CSP & AI agents →", "url": "/blog/csp-sin-unsafe-inline-agentes-ia/", "enabled": true },
-                { "label": "Decoupled TypeScript in 5 repos →", "url": "/blog/decoupled-typescript-ecosystem-5-repos/", "enabled": true },
-                { "label": "All Publications →", "url": "/publications/", "enabled": true }
-              ]
-            }
-          }
+        "title": "",
+        "items": "package :: TypeScript & repository boundaries :: How to split a monorepo into standalone packages with automated import boundary checks and zero cycles.\nshield :: Strict CSP without unsafe-inline :: Removing inline scripts and inline styles without sacrificing interactivity (theme toggle, navigation, and forms).\nbot :: Web Bot Auth & Local Trust Protocol :: Verifying did:apw identity and cryptographic agent signatures using @verared/*."
+      }
+    },
+    {
+      "id": "en-guides-spacer-3",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "en-guides-reading-links",
+      "type": "LinkList",
+      "props": {
+        "title": "Related reading in Publications",
+        "buttonStyle": "outline",
+        "links": [
+          { "label": "Strict CSP & AI agents →", "url": "/blog/csp-sin-unsafe-inline-agentes-ia/", "enabled": true },
+          { "label": "Decoupled TypeScript in 5 repos →", "url": "/blog/decoupled-typescript-ecosystem-5-repos/", "enabled": true },
+          { "label": "All Publications →", "url": "/publications/", "enabled": true }
         ]
-      ]
+      }
     }
   ]
 }

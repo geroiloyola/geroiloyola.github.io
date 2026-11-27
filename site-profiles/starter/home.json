@@ -2,122 +2,130 @@
   "version": "0.1",
   "slug": "home",
   "title": "Geroi Loyola — Explore · TypeScript, IA, Agentes y Arquitectura Web",
-  "description": "Hub personal estilo editorial y mini-wiki de Geroi Loyola: proyectos open source (Portaless, Verared, Gerarion, Tokenless), publicaciones técnicas y guías prácticas.",
+  "description": "Hub personal editorial y mini-wiki de Geroi Loyola: proyectos open source (Portaless, Verared, Gerarion, Tokenless), publicaciones técnicas y guías prácticas.",
   "theme": "geroi-editorial",
   "root": [
     {
-      "id": "explore-shell",
+      "id": "explore-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "TypeScript, IA, Agentes y Arquitectura Web sin cajas negras",
+        "subtitle": "Soy Geroi Loyola. Construyo software abierto, protocolos verificables para agentes de IA y guías prácticas para recuperar el control de tu infraestructura web.",
+        "ctaLabel": "Explorar Projects",
+        "ctaHref": "/pages/projects/"
+      }
+    },
+    {
+      "id": "explore-spacer-1",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "explore-ecosystem-h",
+      "type": "Heading",
+      "props": {
+        "text": "Ecosistema activo",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Explore · Projects",
+        "align": "left",
+        "size": "lg"
+      }
+    },
+    {
+      "id": "explore-ecosystem-bento",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "layout": "bento",
+        "items": "server :: Portaless :: CMS web moderno sobre Astro con CSP estricto sin unsafe-inline, editor visual (Visual Elements), ThemePack v2 dual-mode, SQLite/D1 y servidor MCP nativo (19 herramientas). :: span=2 :: featured\npackage :: Gerarion :: [Editable] Pieza del ecosistema en documentación: propósito, arquitectura y encaje con Portaless y Verared.\nbot :: Tokenless :: [Editable] Pieza enfocada en diseño verificable y flujos sin fricción innecesaria.\nshield :: Verared :: Vera Trust Stack en 7 paquetes Apache-2.0 (@verared/* en npm): identidad criptográfica did:apw, Web Bot Auth y Local Trust Protocol sin autoridad central. :: span=2 :: featured"
+      }
+    },
+    {
+      "id": "explore-spacer-2",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "explore-publications",
+      "type": "PostList",
+      "props": {
+        "title": "Últimas Publications",
+        "limit": 6
+      }
+    },
+    {
+      "id": "explore-spacer-3",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "explore-now-h",
+      "type": "Heading",
+      "props": {
+        "text": "Qué construyo ahora y accesos rápidos",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Now · Hub",
+        "align": "left"
+      }
+    },
+    {
+      "id": "explore-now-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "Evolucionando Visual Elements, ThemePack v2 y el ecosistema abierto de Portaless + Verared (@verared/*@0.1.0). Todo este sitio corre sobre HTML estático, CSP estricto (A-07) y bloques editables en /admin/editor."
+      }
+    },
+    {
+      "id": "explore-quick-actions",
       "type": "Columns",
       "props": {
-        "count": 2,
-        "ratio": "2-1",
-        "gap": 24
+        "count": 3,
+        "gap": 16
       },
       "columnSlots": [
         [
           {
-            "id": "explore-hero",
-            "type": "Hero",
+            "id": "explore-btn-publications",
+            "type": "Button",
             "props": {
-              "variant": "spotlight",
-              "size": "lg",
-              "title": "TypeScript, IA, Agentes y Arquitectura Web sin cajas negras",
-              "subtitle": "Construyo software abierto, protocolos verificables para agentes de IA y guías prácticas para recuperar el control de tu infraestructura web.",
-              "ctaLabel": "Explorar Projects",
-              "ctaHref": "/pages/projects/"
-            }
-          },
-          {
-            "id": "explore-spacer-1",
-            "type": "Spacer",
-            "props": {
-              "height": 20
-            }
-          },
-          {
-            "id": "explore-ecosystem-h",
-            "type": "Heading",
-            "props": {
-              "text": "Ecosistema activo",
-              "level": "h2",
-              "variant": "eyebrow",
-              "eyebrow": "Explore · Projects",
-              "align": "left",
-              "size": "lg"
-            }
-          },
-          {
-            "id": "explore-ecosystem-bento",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "layout": "bento",
-              "items": "server :: Portaless :: CMS web moderno sobre Astro con CSP estricto sin unsafe-inline, editor visual (Visual Elements), ThemePack v2 dual-mode, SQLite/D1 y servidor MCP nativo (19 herramientas). :: span=2 :: featured\npackage :: Gerarion :: [Editable] Pieza del ecosistema en documentación: propósito, arquitectura y encaje con Portaless y Verared.\nbot :: Tokenless :: [Editable] Pieza enfocada en diseño verificable y flujos sin fricción innecesaria.\nshield :: Verared :: Vera Trust Stack en 7 paquetes Apache-2.0 (@verared/* en npm): identidad criptográfica did:apw, Web Bot Auth y Local Trust Protocol sin autoridad central. :: span=2 :: featured"
-            }
-          },
-          {
-            "id": "explore-spacer-2",
-            "type": "Spacer",
-            "props": {
-              "height": 24
-            }
-          },
-          {
-            "id": "explore-publications",
-            "type": "PostList",
-            "props": {
-              "title": "Últimas Publications",
-              "limit": 6
+              "label": "Ver Publications →",
+              "href": "/publications/",
+              "variant": "solid",
+              "size": "sm"
             }
           }
         ],
         [
           {
-            "id": "sidebar-profile-h",
-            "type": "Heading",
+            "id": "explore-btn-guides",
+            "type": "Button",
             "props": {
-              "text": "Geroi Loyola",
-              "level": "h2",
-              "variant": "eyebrow",
-              "eyebrow": "Creator · Profile",
-              "align": "left"
+              "label": "Guides prácticas",
+              "href": "/pages/guides/",
+              "variant": "outline",
+              "size": "sm"
             }
-          },
+          }
+        ],
+        [
           {
-            "id": "sidebar-now-p",
-            "type": "Paragraph",
+            "id": "explore-btn-profile",
+            "type": "Button",
             "props": {
-              "text": "Now: evolucionando Visual Elements, ThemePack v2 y el ecosistema abierto de Portaless + Verared (@verared/*@0.1.0). [Editable desde /admin/editor]"
-            }
-          },
-          {
-            "id": "sidebar-stack-grid",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "items": "package :: Stack principal :: TypeScript, Astro, Node 24, SQLite / Cloudflare D1, MCP y Web Bot Auth.\nshield :: Principio guía :: HTML estático primero, CSP estricto (A-07), cero lock-in y fronteras limpias."
-            }
-          },
-          {
-            "id": "sidebar-spacer",
-            "type": "Spacer",
-            "props": {
-              "height": 16
-            }
-          },
-          {
-            "id": "sidebar-links",
-            "type": "LinkList",
-            "props": {
-              "title": "Accesos rápidos",
-              "buttonStyle": "outline",
-              "links": [
-                { "label": "Publications →", "url": "/publications/", "enabled": true },
-                { "label": "Projects (OSS + CV) →", "url": "/pages/projects/", "enabled": true },
-                { "label": "Contributions →", "url": "/pages/contributions/", "enabled": true },
-                { "label": "Guides prácticas →", "url": "/pages/guides/", "enabled": true },
-                { "label": "Profile (Mini-wiki) →", "url": "/pages/profile/", "enabled": true }
-              ]
+              "label": "Profile (Mini-wiki)",
+              "href": "/pages/profile/",
+              "variant": "outline",
+              "size": "sm"
             }
           }
         ]

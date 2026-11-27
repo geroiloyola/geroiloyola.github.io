@@ -21,7 +21,7 @@
       "id": "guides-spacer-1",
       "type": "Spacer",
       "props": {
-        "height": 20
+        "height": 24
       }
     },
     {
@@ -42,7 +42,7 @@
       "props": {
         "title": "",
         "layout": "bento",
-        "items": "server :: 1. Despliegue gratis en GitHub Pages o Cloudflare Pages :: Haz fork, ajusta site-profiles/starter/ y deja que GitHub Actions publique HTML estático con CSP estricto (A-07). Si necesitas runtime dinámico y Trust Layer, conecta Cloudflare Pages + D1 o Docker self-host. :: span=2 :: featured\npackage :: 2. Editor Visual (/admin/editor) :: Edita la portada y cada página con los 17 Visual Elements (Bento Grid, Columns ratio 2-1, Hero, PostList) sin tocar HTML.\nshield :: 3. ThemePack v2 Claro/Oscuro :: Define lightVars, darkVars y tokens editoriales (--font-display, --space-section, --elevation) validados con WCAG AA >= 4.5:1.\nbot :: 4. Agentes IA vía MCP nativo (19 herramientas) :: Conecta Claude, ChatGPT o cualquier cliente MCP con permisos atómicos para crear páginas, editar bloques y aplicar temas con trazabilidad real. :: span=2 :: featured"
+        "items": "server :: 1. Despliegue gratis en GitHub Pages o Cloudflare Pages :: Haz fork, ajusta site-profiles/starter/ y deja que GitHub Actions publique HTML estático con CSP estricto (A-07). Si necesitas runtime dinámico y Trust Layer, conecta Cloudflare Pages + D1 o Docker self-host. :: span=2 :: featured\npackage :: 2. Editor Visual (/admin/editor) :: Edita la portada y cada página con los 17 Visual Elements (Bento Grid, Columns, Hero, PostList) sin tocar HTML.\nshield :: 3. ThemePack v2 Claro/Oscuro :: Define lightVars, darkVars y tokens editoriales (--font-display, --space-section, --elevation) validados con WCAG AA >= 4.5:1.\nbot :: 4. Agentes IA vía MCP nativo (19 herramientas) :: Conecta Claude, ChatGPT o cualquier cliente MCP con permisos atómicos para crear páginas, editar bloques y aplicar temas con trazabilidad real. :: span=2 :: featured"
       }
     },
     {
@@ -65,49 +65,32 @@
       }
     },
     {
-      "id": "guides-tracks-cols",
-      "type": "Columns",
+      "id": "guides-tracks-grid",
+      "type": "FeatureGrid",
       "props": {
-        "count": 2,
-        "ratio": "2-1",
-        "gap": 24
-      },
-      "columnSlots": [
-        [
-          {
-            "id": "guides-tracks-grid",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "items": "package :: TypeScript y fronteras entre repositorios :: Cómo dividir un monorepo en paquetes independientes con checks automáticos de límites y cero ciclos.\nshield :: CSP estricto sin unsafe-inline :: Cómo eliminar scripts y estilos inline sin perder interactividad (alternador de tema, navegación y formularios).\nbot :: Web Bot Auth y Local Trust Protocol :: Cómo verificar identidad did:apw y firmas criptográficas de agentes web usando @verared/*."
-            }
-          }
-        ],
-        [
-          {
-            "id": "guides-sidebar-h",
-            "type": "Heading",
-            "props": {
-              "text": "Artículos relacionados",
-              "level": "h3",
-              "align": "left"
-            }
-          },
-          {
-            "id": "guides-sidebar-links",
-            "type": "LinkList",
-            "props": {
-              "title": "",
-              "buttonStyle": "outline",
-              "links": [
-                { "label": "CSP sin unsafe-inline y agentes IA →", "url": "/blog/csp-sin-unsafe-inline-agentes-ia/", "enabled": true },
-                { "label": "Ecosistema TypeScript en 5 repos →", "url": "/blog/decoupled-typescript-ecosystem-5-repos/", "enabled": true },
-                { "label": "Todas las Publications →", "url": "/publications/", "enabled": true }
-              ]
-            }
-          }
+        "title": "",
+        "items": "package :: TypeScript y fronteras entre repositorios :: Cómo dividir un monorepo en paquetes independientes con checks automáticos de límites y cero ciclos.\nshield :: CSP estricto sin unsafe-inline :: Cómo eliminar scripts y estilos inline sin perder interactividad (alternador de tema, navegación y formularios).\nbot :: Web Bot Auth y Local Trust Protocol :: Cómo verificar identidad did:apw y firmas criptográficas de agentes web usando @verared/*."
+      }
+    },
+    {
+      "id": "guides-spacer-3",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "guides-reading-links",
+      "type": "LinkList",
+      "props": {
+        "title": "Artículos relacionados en Publications",
+        "buttonStyle": "outline",
+        "links": [
+          { "label": "CSP sin unsafe-inline y agentes IA →", "url": "/blog/csp-sin-unsafe-inline-agentes-ia/", "enabled": true },
+          { "label": "Ecosistema TypeScript en 5 repos →", "url": "/blog/decoupled-typescript-ecosystem-5-repos/", "enabled": true },
+          { "label": "Ver todas las Publications →", "url": "/publications/", "enabled": true }
         ]
-      ]
+      }
     }
   ]
 }

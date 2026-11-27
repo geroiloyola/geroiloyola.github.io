@@ -21,7 +21,7 @@
       "id": "en-proj-spacer-1",
       "type": "Spacer",
       "props": {
-        "height": 20
+        "height": 24
       }
     },
     {
@@ -65,56 +65,19 @@
       }
     },
     {
-      "id": "en-proj-cv-cols",
-      "type": "Columns",
+      "id": "en-proj-cv-grid",
+      "type": "FeatureGrid",
       "props": {
-        "count": 2,
-        "ratio": "2-1",
-        "gap": 24
-      },
-      "columnSlots": [
-        [
-          {
-            "id": "en-proj-cv-grid",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "items": "server :: [Editable] Role / Production System 1 :: Year – Present · Company or client. Technical problem solved, architecture decisions, and measurable outcomes.\npackage :: [Editable] Role / Production System 2 :: Year – Year · Company or client. Stack (TypeScript, Node, Edge, SQL), critical integrations, and impact.\nshield :: [Editable] Private Architecture & Advisory :: NDA engagements, web security reviews (CSP, auth, package boundaries), and zero-downtime migrations."
-            }
-          }
-        ],
-        [
-          {
-            "id": "en-proj-cv-sidebar-h",
-            "type": "Heading",
-            "props": {
-              "text": "Snapshot",
-              "level": "h3",
-              "align": "left"
-            }
-          },
-          {
-            "id": "en-proj-cv-sidebar-p",
-            "type": "Paragraph",
-            "props": {
-              "text": "[Editable] Edit this block in /admin/editor?slug=en-projects to add availability, years of experience, or a downloadable CV link."
-            }
-          },
-          {
-            "id": "en-proj-cv-links",
-            "type": "LinkList",
-            "props": {
-              "title": "Related",
-              "buttonStyle": "outline",
-              "links": [
-                { "label": "View FOSS Contributions →", "url": "/pages/en-contributions/", "enabled": true },
-                { "label": "Read Portaless Guides →", "url": "/pages/en-guides/", "enabled": true },
-                { "label": "Open Profile →", "url": "/pages/en-profile/", "enabled": true }
-              ]
-            }
-          }
-        ]
-      ]
+        "title": "",
+        "items": "server :: [Editable] Role / Production System 1 :: Year – Present · Company or client. Technical problem solved, architecture decisions, and measurable outcomes.\npackage :: [Editable] Role / Production System 2 :: Year – Year · Company or client. Stack (TypeScript, Node, Edge, SQL), critical integrations, and impact.\nshield :: [Editable] Private Architecture & Advisory :: NDA engagements, web security reviews (CSP, auth, package boundaries), and zero-downtime migrations."
+      }
+    },
+    {
+      "id": "en-proj-cv-summary",
+      "type": "Paragraph",
+      "props": {
+        "text": "[Editable] Edit this block in /admin/editor?slug=en-projects to add availability, years of experience, or a downloadable CV link."
+      }
     }
   ]
 }

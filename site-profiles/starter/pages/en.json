@@ -6,118 +6,126 @@
   "theme": "geroi-editorial",
   "root": [
     {
-      "id": "en-explore-shell",
+      "id": "en-explore-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "TypeScript, AI, Agents & Web Architecture without black boxes",
+        "subtitle": "I am Geroi Loyola. I build open-source web tools, verifiable protocols for AI agents, and practical engineering guides that give you back control of your infrastructure.",
+        "ctaLabel": "Explore Projects",
+        "ctaHref": "/pages/en-projects/"
+      }
+    },
+    {
+      "id": "en-explore-spacer-1",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "en-explore-ecosystem-h",
+      "type": "Heading",
+      "props": {
+        "text": "Active ecosystem",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Explore · Projects",
+        "align": "left",
+        "size": "lg"
+      }
+    },
+    {
+      "id": "en-explore-ecosystem-bento",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "layout": "bento",
+        "items": "server :: Portaless :: Modern Astro CMS with strict CSP (zero unsafe-inline), Visual Elements editor, ThemePack v2 dual-mode, SQLite/D1, and native MCP server (19 tools). :: span=2 :: featured\npackage :: Gerarion :: [Editable] Ecosystem piece in documentation: problem statement, core architecture, and integration with Portaless and Verared.\nbot :: Tokenless :: [Editable] Ecosystem piece focused on verifiable design and low-friction workflows.\nshield :: Verared :: Vera Trust Stack in 7 Apache-2.0 packages (@verared/* on npm): did:apw cryptographic identity, Web Bot Auth, and Local Trust Protocol without a central gatekeeper. :: span=2 :: featured"
+      }
+    },
+    {
+      "id": "en-explore-spacer-2",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "en-explore-publications",
+      "type": "PostList",
+      "props": {
+        "title": "Latest Publications",
+        "limit": 6
+      }
+    },
+    {
+      "id": "en-explore-spacer-3",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "en-explore-now-h",
+      "type": "Heading",
+      "props": {
+        "text": "What I am building now & quick links",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Now · Hub",
+        "align": "left"
+      }
+    },
+    {
+      "id": "en-explore-now-p",
+      "type": "Paragraph",
+      "props": {
+        "text": "Evolving Visual Elements, ThemePack v2, and the open Portaless + Verared ecosystem (@verared/*@0.1.0). This entire hub runs on static HTML, strict CSP (A-07), and blocks editable in /admin/editor."
+      }
+    },
+    {
+      "id": "en-explore-quick-actions",
       "type": "Columns",
       "props": {
-        "count": 2,
-        "ratio": "2-1",
-        "gap": 24
+        "count": 3,
+        "gap": 16
       },
       "columnSlots": [
         [
           {
-            "id": "en-explore-hero",
-            "type": "Hero",
+            "id": "en-explore-btn-publications",
+            "type": "Button",
             "props": {
-              "variant": "spotlight",
-              "size": "lg",
-              "title": "TypeScript, AI, Agents & Web Architecture without black boxes",
-              "subtitle": "I build open-source web tools, verifiable protocols for AI agents, and practical engineering guides that give you back control of your infrastructure.",
-              "ctaLabel": "Explore Projects",
-              "ctaHref": "/pages/en-projects/"
-            }
-          },
-          {
-            "id": "en-explore-spacer-1",
-            "type": "Spacer",
-            "props": {
-              "height": 20
-            }
-          },
-          {
-            "id": "en-explore-ecosystem-h",
-            "type": "Heading",
-            "props": {
-              "text": "Active ecosystem",
-              "level": "h2",
-              "variant": "eyebrow",
-              "eyebrow": "Explore · Projects",
-              "align": "left",
-              "size": "lg"
-            }
-          },
-          {
-            "id": "en-explore-ecosystem-bento",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "layout": "bento",
-              "items": "server :: Portaless :: Modern Astro CMS with strict CSP (zero unsafe-inline), Visual Elements editor, ThemePack v2 dual-mode, SQLite/D1, and native MCP server (19 tools). :: span=2 :: featured\npackage :: Gerarion :: [Editable] Ecosystem piece in documentation: problem statement, core architecture, and integration with Portaless and Verared.\nbot :: Tokenless :: [Editable] Ecosystem piece focused on verifiable design and low-friction workflows.\nshield :: Verared :: Vera Trust Stack in 7 Apache-2.0 packages (@verared/* on npm): did:apw cryptographic identity, Web Bot Auth, and Local Trust Protocol without a central gatekeeper. :: span=2 :: featured"
-            }
-          },
-          {
-            "id": "en-explore-spacer-2",
-            "type": "Spacer",
-            "props": {
-              "height": 24
-            }
-          },
-          {
-            "id": "en-explore-publications",
-            "type": "PostList",
-            "props": {
-              "title": "Latest Publications",
-              "limit": 6
+              "label": "Read Publications →",
+              "href": "/publications/",
+              "variant": "solid",
+              "size": "sm"
             }
           }
         ],
         [
           {
-            "id": "en-sidebar-profile-h",
-            "type": "Heading",
+            "id": "en-explore-btn-guides",
+            "type": "Button",
             "props": {
-              "text": "Geroi Loyola",
-              "level": "h2",
-              "variant": "eyebrow",
-              "eyebrow": "Creator · Profile",
-              "align": "left"
+              "label": "Practical Guides",
+              "href": "/pages/en-guides/",
+              "variant": "outline",
+              "size": "sm"
             }
-          },
+          }
+        ],
+        [
           {
-            "id": "en-sidebar-now-p",
-            "type": "Paragraph",
+            "id": "en-explore-btn-profile",
+            "type": "Button",
             "props": {
-              "text": "Now: evolving Visual Elements, ThemePack v2, and the open Portaless + Verared ecosystem (@verared/*@0.1.0). [Editable in /admin/editor]"
-            }
-          },
-          {
-            "id": "en-sidebar-stack-grid",
-            "type": "FeatureGrid",
-            "props": {
-              "title": "",
-              "items": "package :: Core stack :: TypeScript, Astro, Node 24, SQLite / Cloudflare D1, MCP, and Web Bot Auth.\nshield :: Guiding rule :: Static HTML first, strict CSP (A-07), zero lock-in, and clean repository boundaries."
-            }
-          },
-          {
-            "id": "en-sidebar-spacer",
-            "type": "Spacer",
-            "props": {
-              "height": 16
-            }
-          },
-          {
-            "id": "en-sidebar-links",
-            "type": "LinkList",
-            "props": {
-              "title": "Quick navigation",
-              "buttonStyle": "outline",
-              "links": [
-                { "label": "Publications →", "url": "/publications/", "enabled": true },
-                { "label": "Projects (OSS + CV) →", "url": "/pages/en-projects/", "enabled": true },
-                { "label": "Contributions →", "url": "/pages/en-contributions/", "enabled": true },
-                { "label": "Practical Guides →", "url": "/pages/en-guides/", "enabled": true },
-                { "label": "Profile (Mini-wiki) →", "url": "/pages/en-profile/", "enabled": true }
-              ]
+              "label": "Profile (Mini-wiki)",
+              "href": "/pages/en-profile/",
+              "variant": "outline",
+              "size": "sm"
             }
           }
         ]
