@@ -10,14 +10,22 @@ const posts = publishedPosts(await getCollection("posts"));
 const pageTheme = ecosystemPageTheme();
 const pageThemeModes = ecosystemPageThemeModes();
 ---
-<BaseLayout title={`${postsLabel()} — Portaless`} pageTheme={pageTheme} pageThemeModes={pageThemeModes}>
-  <h1>{postsLabel()}</h1>
+<BaseLayout title="Publications — Geroi Loyola" description="Artículos técnicos y notas de arquitectura por Geroi Loyola." pageTheme={pageTheme} pageThemeModes={pageThemeModes}>
+  <section class="pub-header">
+    <p class="pub-eyebrow">Publications</p>
+    <h1>Publications</h1>
+    <p class="pub-intro">Artículos técnicos, notas de arquitectura web, protocolos verificables para agentes de IA y lecciones reales construyendo en abierto.</p>
+  </section>
   {posts.length === 0 && <p class="empty-state">Todavía no hay publicaciones.</p>}
-  {posts.map((post) => (
-    <div class="card">
-      <h3><a href={`./${post.id}/`}>{post.data.title}</a></h3>
-      <p class="badge">{post.data.pubDate.toLocaleDateString("es-CL")}</p>
-      {post.data.description && <p>{post.data.description}</p>}
-    </div>
-  ))}
+  <div class="pub-feed">
+    {posts.map((post) => (
+      <article class="card pub-card">
+        <div class="pub-meta">
+          <span class="badge">{post.data.pubDate.toLocaleDateString("es-CL")}</span>
+        </div>
+        <h2><a href={`./${post.id}/`}>{post.data.title}</a></h2>
+        {post.data.description && <p>{post.data.description}</p>}
+      </article>
+    ))}
+  </div>
 </BaseLayout>

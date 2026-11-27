@@ -55,9 +55,10 @@ const languageAlternate = other
   ? { hreflang: other.locale, href: versionHref(other, base) }
   : undefined;
 
+const effectiveLocale = layout.slug === "en" || layout.slug.startsWith("en-") ? "en" : version.locale;
 const pageTitle = layout.title ?? layout.slug;
 const pageDescription = layout.description ?? "";
-const siteInfo = { name: pageTitle, url: siteUrl, base, inLanguage: version.locale };
+const siteInfo = { name: pageTitle, url: siteUrl, base, inLanguage: effectiveLocale };
 const revisionHistoryModules = import.meta.glob<{ default: PublicRevisionHistory }>("../content/revision-history/*.json", { eager: true });
 const revisionHistory = layout.publicationId
   ? Object.values(revisionHistoryModules).map((module) => module.default).find((history) => history.publicationId === layout.publicationId)
@@ -68,7 +69,7 @@ const revisionHistory = layout.publicationId
   pageTheme={pageTheme}
   pageThemeModes={pageThemeModes}
   headerContext={headerContext}
-  lang={version.locale}
+  lang={effectiveLocale}
   alternates={alternates}
   languageAlternate={languageAlternate}
 >

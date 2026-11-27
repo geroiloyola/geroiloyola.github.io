@@ -1,8 +1,8 @@
 {
   "version": "0.1",
   "slug": "en-guides",
-  "title": "Practical Guides — TypeScript, AI Agents & Web Architecture",
-  "description": "Structured hands-on learning tracks on modular TypeScript, AI agents with MCP and Web Bot Auth, and resilient web architecture.",
+  "title": "Guides — Practical Playbooks for Portaless, TypeScript & AI · Geroi Loyola",
+  "description": "Step-by-step playbooks: installing and mastering Portaless (GitHub Pages, Cloudflare, Docker, /admin/editor), modular TypeScript, MCP agents, and strict CSP.",
   "theme": "geroi-editorial",
   "root": [
     {
@@ -11,106 +11,99 @@
       "props": {
         "variant": "spotlight",
         "size": "lg",
-        "title": "Practical web engineering guides",
-        "subtitle": "Direct, production-tested learning tracks covering strict TypeScript architecture, verifiable AI agent protocols, and fast websites without fragile dependencies.",
+        "title": "Guides — Hands-on engineering playbooks",
+        "subtitle": "Direct, practical guides to deploy and master Portaless, structure decoupled TypeScript packages, connect MCP agents, and enforce strict CSP in production.",
         "ctaLabel": "Leer en Español →",
-        "ctaHref": "/pages/guias/"
+        "ctaHref": "/pages/guides/"
       }
     },
     {
-      "id": "en-guides-ts-h",
+      "id": "en-guides-spacer-1",
+      "type": "Spacer",
+      "props": {
+        "height": 20
+      }
+    },
+    {
+      "id": "en-guides-portaless-h",
       "type": "Heading",
       "props": {
-        "text": "Track 1 — TypeScript & modular package design",
+        "text": "Playbook: installing & mastering Portaless",
         "level": "h2",
         "variant": "eyebrow",
-        "eyebrow": "TypeScript",
-        "align": "left"
+        "eyebrow": "Portaless · Zero to production",
+        "align": "left",
+        "size": "lg"
       }
     },
     {
-      "id": "en-guides-ts-grid",
+      "id": "en-guides-portaless-bento",
       "type": "FeatureGrid",
       "props": {
         "title": "",
-        "items": "package :: Strict import boundaries :: Preventing silent coupling across packages and blocking deep src/ imports with automated boundary gates.\nserver :: Reproducible npm publishing :: Exact semver pinning, lockfile sha512 integrity, and verifiable provenance in GitHub Actions."
+        "layout": "bento",
+        "items": "server :: 1. Deploy free on GitHub Pages or Cloudflare Pages :: Fork the repo, customize site-profiles/starter/, and ship static HTML with strict CSP (A-07). Add Cloudflare Pages + D1 or Docker self-hosting when you want the dynamic runtime and Trust Layer. :: span=2 :: featured\npackage :: 2. Visual Editor (/admin/editor) :: Edit your home page and subpages with all 17 Visual Elements (Bento Grid, Columns ratio 2-1, Hero, PostList) without hand-coding HTML.\nshield :: 3. ThemePack v2 Light/Dark :: Declare lightVars, darkVars, and editorial tokens (--font-display, --space-section, --elevation) checked against WCAG AA >= 4.5:1.\nbot :: 4. AI Agents via native MCP (19 tools) :: Connect Claude, ChatGPT, or any MCP client under atomic permissions to create pages, edit blocks, and switch themes with real audit trails. :: span=2 :: featured"
       }
     },
     {
-      "id": "en-guides-ai-h",
+      "id": "en-guides-spacer-2",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "en-guides-tracks-h",
       "type": "Heading",
       "props": {
-        "text": "Track 2 — AI Agents, MCP & Web Bot Auth",
+        "text": "Engineering tracks & public playbooks",
         "level": "h2",
         "variant": "eyebrow",
-        "eyebrow": "AI & Agents",
-        "align": "left"
+        "eyebrow": "Engineering · TypeScript · AI",
+        "align": "left",
+        "size": "lg"
       }
     },
     {
-      "id": "en-guides-ai-grid",
-      "type": "FeatureGrid",
-      "props": {
-        "title": "",
-        "items": "bot :: Permission-scoped MCP servers :: Designing safe agent tools that write drafts without bypassing site governance.\nshield :: Cryptographic identity & Local Trust Protocol :: Separating anonymous traffic, signed agents, and per-route policies (allow, charge, block)."
-      }
-    },
-    {
-      "id": "en-guides-web-h",
-      "type": "Heading",
-      "props": {
-        "text": "Track 3 — Resilient Web Architecture",
-        "level": "h2",
-        "variant": "eyebrow",
-        "eyebrow": "Web Architecture",
-        "align": "left"
-      }
-    },
-    {
-      "id": "en-guides-web-grid",
-      "type": "FeatureGrid",
-      "props": {
-        "title": "",
-        "items": "shield :: Strict CSP without unsafe-inline :: Moving inline handlers into bundled modules and enforcing zero violations in Playwright.\nserver :: Static, Edge & Self-Host parity :: Sharing handlers and contracts cleanly across GitHub Pages, Cloudflare Pages, and Node 24."
-      }
-    },
-    {
-      "id": "en-guides-posts",
-      "type": "PostList",
-      "props": {
-        "title": "Published articles",
-        "limit": 10
-      }
-    },
-    {
-      "id": "en-guides-nav",
+      "id": "en-guides-tracks-cols",
       "type": "Columns",
       "props": {
         "count": 2,
-        "gap": 16
+        "ratio": "2-1",
+        "gap": 24
       },
       "columnSlots": [
         [
           {
-            "id": "en-guides-btn-portaless",
-            "type": "Button",
+            "id": "en-guides-tracks-grid",
+            "type": "FeatureGrid",
             "props": {
-              "label": "Open Portaless guide",
-              "href": "/pages/en-portaless/",
-              "variant": "solid",
-              "size": "sm"
+              "title": "",
+              "items": "package :: TypeScript & repository boundaries :: How to split a monorepo into standalone packages with automated import boundary checks and zero cycles.\nshield :: Strict CSP without unsafe-inline :: Removing inline scripts and inline styles without sacrificing interactivity (theme toggle, navigation, and forms).\nbot :: Web Bot Auth & Local Trust Protocol :: Verifying did:apw identity and cryptographic agent signatures using @verared/*."
             }
           }
         ],
         [
           {
-            "id": "en-guides-btn-home",
-            "type": "Button",
+            "id": "en-guides-sidebar-h",
+            "type": "Heading",
             "props": {
-              "label": "← Back to English home",
-              "href": "/pages/en/",
-              "variant": "outline",
-              "size": "sm"
+              "text": "Related reading",
+              "level": "h3",
+              "align": "left"
+            }
+          },
+          {
+            "id": "en-guides-sidebar-links",
+            "type": "LinkList",
+            "props": {
+              "title": "",
+              "buttonStyle": "outline",
+              "links": [
+                { "label": "Strict CSP & AI agents →", "url": "/blog/csp-sin-unsafe-inline-agentes-ia/", "enabled": true },
+                { "label": "Decoupled TypeScript in 5 repos →", "url": "/blog/decoupled-typescript-ecosystem-5-repos/", "enabled": true },
+                { "label": "All Publications →", "url": "/publications/", "enabled": true }
+              ]
             }
           }
         ]

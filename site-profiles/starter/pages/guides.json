@@ -1,0 +1,113 @@
+{
+  "version": "0.1",
+  "slug": "guides",
+  "title": "Guides — Playbooks prácticos de Portaless, TypeScript e IA · Geroi Loyola",
+  "description": "Guías paso a paso y playbooks públicos: instalar y exprimir Portaless (GitHub Pages, Cloudflare, Docker, /admin/editor), TypeScript modular, agentes MCP y CSP estricto.",
+  "theme": "geroi-editorial",
+  "root": [
+    {
+      "id": "guides-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "Guides — Playbooks técnicos paso a paso",
+        "subtitle": "Guías directas al grano para desplegar y exprimir Portaless, diseñar paquetes TypeScript sin ciclos, conectar agentes MCP y mantener CSP estricto en producción.",
+        "ctaLabel": "Read in English →",
+        "ctaHref": "/pages/en-guides/"
+      }
+    },
+    {
+      "id": "guides-spacer-1",
+      "type": "Spacer",
+      "props": {
+        "height": 20
+      }
+    },
+    {
+      "id": "guides-portaless-h",
+      "type": "Heading",
+      "props": {
+        "text": "Playbook: cómo instalar y exprimir Portaless",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Portaless · De 0 a producción",
+        "align": "left",
+        "size": "lg"
+      }
+    },
+    {
+      "id": "guides-portaless-bento",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "layout": "bento",
+        "items": "server :: 1. Despliegue gratis en GitHub Pages o Cloudflare Pages :: Haz fork, ajusta site-profiles/starter/ y deja que GitHub Actions publique HTML estático con CSP estricto (A-07). Si necesitas runtime dinámico y Trust Layer, conecta Cloudflare Pages + D1 o Docker self-host. :: span=2 :: featured\npackage :: 2. Editor Visual (/admin/editor) :: Edita la portada y cada página con los 17 Visual Elements (Bento Grid, Columns ratio 2-1, Hero, PostList) sin tocar HTML.\nshield :: 3. ThemePack v2 Claro/Oscuro :: Define lightVars, darkVars y tokens editoriales (--font-display, --space-section, --elevation) validados con WCAG AA >= 4.5:1.\nbot :: 4. Agentes IA vía MCP nativo (19 herramientas) :: Conecta Claude, ChatGPT o cualquier cliente MCP con permisos atómicos para crear páginas, editar bloques y aplicar temas con trazabilidad real. :: span=2 :: featured"
+      }
+    },
+    {
+      "id": "guides-spacer-2",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "guides-tracks-h",
+      "type": "Heading",
+      "props": {
+        "text": "Rutas técnicas y playbooks públicos",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Ingeniería · TypeScript · IA",
+        "align": "left",
+        "size": "lg"
+      }
+    },
+    {
+      "id": "guides-tracks-cols",
+      "type": "Columns",
+      "props": {
+        "count": 2,
+        "ratio": "2-1",
+        "gap": 24
+      },
+      "columnSlots": [
+        [
+          {
+            "id": "guides-tracks-grid",
+            "type": "FeatureGrid",
+            "props": {
+              "title": "",
+              "items": "package :: TypeScript y fronteras entre repositorios :: Cómo dividir un monorepo en paquetes independientes con checks automáticos de límites y cero ciclos.\nshield :: CSP estricto sin unsafe-inline :: Cómo eliminar scripts y estilos inline sin perder interactividad (alternador de tema, navegación y formularios).\nbot :: Web Bot Auth y Local Trust Protocol :: Cómo verificar identidad did:apw y firmas criptográficas de agentes web usando @verared/*."
+            }
+          }
+        ],
+        [
+          {
+            "id": "guides-sidebar-h",
+            "type": "Heading",
+            "props": {
+              "text": "Artículos relacionados",
+              "level": "h3",
+              "align": "left"
+            }
+          },
+          {
+            "id": "guides-sidebar-links",
+            "type": "LinkList",
+            "props": {
+              "title": "",
+              "buttonStyle": "outline",
+              "links": [
+                { "label": "CSP sin unsafe-inline y agentes IA →", "url": "/blog/csp-sin-unsafe-inline-agentes-ia/", "enabled": true },
+                { "label": "Ecosistema TypeScript en 5 repos →", "url": "/blog/decoupled-typescript-ecosystem-5-repos/", "enabled": true },
+                { "label": "Todas las Publications →", "url": "/publications/", "enabled": true }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ]
+}

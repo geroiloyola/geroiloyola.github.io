@@ -1,0 +1,139 @@
+{
+  "version": "0.1",
+  "slug": "profile",
+  "title": "Profile — Mini-Wiki Personal · Geroi Loyola",
+  "description": "Mini-wiki personal de Geroi Loyola: bio editable, qué construyo ahora (Now), stack, principios de arquitectura y canales de contacto.",
+  "theme": "geroi-editorial",
+  "root": [
+    {
+      "id": "prof-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "Geroi Loyola — Profile & Mini-Wiki",
+        "subtitle": "Ingeniería web, TypeScript, agentes de IA y software abierto. Un mapa vivo de lo que construyo ahora, las herramientas que uso y los principios con los que diseño sistemas.",
+        "ctaLabel": "Read in English →",
+        "ctaHref": "/pages/en-profile/"
+      }
+    },
+    {
+      "id": "prof-spacer-1",
+      "type": "Spacer",
+      "props": {
+        "height": 20
+      }
+    },
+    {
+      "id": "prof-wiki-cols",
+      "type": "Columns",
+      "props": {
+        "count": 2,
+        "ratio": "2-1",
+        "gap": 24
+      },
+      "columnSlots": [
+        [
+          {
+            "id": "prof-bio-h",
+            "type": "Heading",
+            "props": {
+              "text": "Bio",
+              "level": "h2",
+              "variant": "eyebrow",
+              "eyebrow": "Sobre mí · Editable",
+              "align": "left"
+            }
+          },
+          {
+            "id": "prof-bio-p",
+            "type": "Paragraph",
+            "props": {
+              "text": "[Editable] Reemplaza este párrafo desde /admin/editor?slug=profile para contar tu historia, formación, intereses actuales y el enfoque detrás de tu trabajo técnico."
+            }
+          },
+          {
+            "id": "prof-now-h",
+            "type": "Heading",
+            "props": {
+              "text": "Qué construyo ahora (Now)",
+              "level": "h2",
+              "variant": "eyebrow",
+              "eyebrow": "Now",
+              "align": "left"
+            }
+          },
+          {
+            "id": "prof-now-grid",
+            "type": "FeatureGrid",
+            "props": {
+              "title": "",
+              "items": "server :: Portaless & Visual Elements :: Consolidando el motor visual CSS-first, ThemePack v2 dual-mode y edición visual 100% sin código inline.\nshield :: Verared (@verared/*) :: Evolucionando los 7 paquetes Apache-2.0 del Vera Trust Stack y los contratos verificables para agentes web.\npackage :: Gerarion & Tokenless :: [Editable] Estado actual de los próximos bloques del ecosistema."
+            }
+          },
+          {
+            "id": "prof-principles-h",
+            "type": "Heading",
+            "props": {
+              "text": "Principios de arquitectura",
+              "level": "h2",
+              "variant": "eyebrow",
+              "eyebrow": "Criterio técnico",
+              "align": "left"
+            }
+          },
+          {
+            "id": "prof-principles-grid",
+            "type": "FeatureGrid",
+            "props": {
+              "title": "",
+              "items": "shield :: Seguridad por defecto :: CSP estricto sin unsafe-inline, permisos atómicos explícitos y fail-closed donde importa.\nserver :: Simplicidad y soberanía :: HTML estático primero, SQLite/D1 portátil, cero dependencias opacas y migración libre entre hostings.\npackage :: Fronteras explícitas :: Contratos públicos pequeños, pruebas reproducibles y cero importaciones internas entre repositorios."
+            }
+          }
+        ],
+        [
+          {
+            "id": "prof-card-h",
+            "type": "Heading",
+            "props": {
+              "text": "Ficha rápida",
+              "level": "h2",
+              "variant": "eyebrow",
+              "eyebrow": "Stack · Contacto",
+              "align": "left"
+            }
+          },
+          {
+            "id": "prof-stack-p",
+            "type": "Paragraph",
+            "props": {
+              "text": "Stack habitual: TypeScript, Astro, Node.js 24, SQLite / Cloudflare D1, Vitest, Playwright, Docker, MCP y Web Bot Auth."
+            }
+          },
+          {
+            "id": "prof-contact-p",
+            "type": "Paragraph",
+            "props": {
+              "text": "[Editable] Contacto y canales oficiales: agrega aquí tu correo público, GitHub (github.com/geroiloyola) u otros enlaces cuando decidas publicarlos."
+            }
+          },
+          {
+            "id": "prof-links",
+            "type": "LinkList",
+            "props": {
+              "title": "Mapa del sitio",
+              "buttonStyle": "outline",
+              "links": [
+                { "label": "Explore (Portada) →", "url": "/", "enabled": true },
+                { "label": "Publications →", "url": "/publications/", "enabled": true },
+                { "label": "Projects →", "url": "/pages/projects/", "enabled": true },
+                { "label": "Contributions →", "url": "/pages/contributions/", "enabled": true },
+                { "label": "Guides →", "url": "/pages/guides/", "enabled": true }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ]
+}

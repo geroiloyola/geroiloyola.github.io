@@ -152,7 +152,7 @@ afterAll(() => {
 });
 
 describe("barrido estatico del hub personal (geroiloyola.github.io)", () => {
-  it("el build starter emite las 7 paginas ES/EN, los 2 posts, 0 enlaces rotos y 0 scripts/handlers inline", () => {
+  it("el build starter emite las 9 paginas ES/EN, /publications/, los 2 posts, 0 enlaces rotos y 0 scripts/handlers inline", () => {
     expect(starterPages.length).toBeGreaterThan(20);
     assertCleanLinks(distStarter, starterPages);
 
@@ -161,14 +161,18 @@ describe("barrido estatico del hub personal (geroiloyola.github.io)", () => {
       .map((p) => p.urlPath)
       .sort();
     expect(starterContentPages).toEqual([
-      "/portaless/pages/ecosistema/",
-      "/portaless/pages/en-ecosystem/",
+      "/portaless/pages/contributions/",
+      "/portaless/pages/en-contributions/",
       "/portaless/pages/en-guides/",
-      "/portaless/pages/en-portaless/",
+      "/portaless/pages/en-profile/",
+      "/portaless/pages/en-projects/",
       "/portaless/pages/en/",
-      "/portaless/pages/guias/",
-      "/portaless/pages/portaless/",
+      "/portaless/pages/guides/",
+      "/portaless/pages/profile/",
+      "/portaless/pages/projects/",
     ]);
+
+    expect(starterPages.some((p) => p.urlPath === "/portaless/publications/")).toBe(true);
 
     const starterBlogPosts = starterPages
       .filter((p) => p.urlPath.startsWith("/portaless/blog/") && p.urlPath !== "/portaless/blog/")
@@ -179,7 +183,7 @@ describe("barrido estatico del hub personal (geroiloyola.github.io)", () => {
       "/portaless/blog/decoupled-typescript-ecosystem-5-repos/",
     ]);
 
-    for (const urlPath of ["/portaless/", "/portaless/pages/en/", "/portaless/pages/ecosistema/"]) {
+    for (const urlPath of ["/portaless/", "/portaless/pages/en/", "/portaless/pages/projects/", "/portaless/publications/"]) {
       const page = starterPages.find((p) => p.urlPath === urlPath);
       expect(page, urlPath).toBeTruthy();
       expect(page!.html).not.toMatch(/<img[^>]+src="https?:\/\//i);
@@ -188,7 +192,7 @@ describe("barrido estatico del hub personal (geroiloyola.github.io)", () => {
 
     const sitemap = readFileSync(join(distStarter, "sitemap.xml"), "utf8");
     expect(sitemap).toContain("/portaless/blog/csp-sin-unsafe-inline-agentes-ia/");
-    expect(sitemap).toContain("/portaless/pages/ecosistema/");
+    expect(sitemap).toContain("/portaless/pages/projects/");
 
     const llms = readFileSync(join(distStarter, "llms.txt"), "utf8");
     expect(llms).toContain("/portaless/blog/csp-sin-unsafe-inline-agentes-ia.md");

@@ -29,11 +29,20 @@ function escapeHtml(value: unknown): string {
   })[character]!);
 }
 
+function themeToggleHtml(locale: Locale): string {
+  const label = locale === "es" ? "Cambiar modo claro/oscuro" : "Toggle light/dark mode";
+  return `<button type="button" class="hdr-btn hdr-theme-toggle" data-theme-toggle aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}" aria-pressed="false">`
+    + `<svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`
+    + `<svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`
+    + `</button>`;
+}
+
 /** One semantic header contract consumed by both Astro and the Node PageStore shell. */
 export function renderPublicHeaderHtml(options: PublicHeaderOptions): string {
-  const { locale, hasPosts, commerceEnabled, alternatePath, languageAlternate } = options;
+  const { locale, hasPosts, alternatePath, languageAlternate } = options;
   const base = options.base ?? "/";
   const baseNoSlash = base.replace(/\/+$/, "");
+  const isEn = locale === "en";
   const others = otherLocales(locale);
   const localized = Boolean(languageAlternate) || Boolean(alternatePath);
   const showSwitcher = isMultilingual() && localized && others.length > 0;
@@ -42,15 +51,26 @@ export function renderPublicHeaderHtml(options: PublicHeaderOptions): string {
   const switcher = languageAlternate
     ? languageAlternate
     : { href: `${baseNoSlash}${localePath(other, alternatePath ?? "/")}`, hreflang: other };
+
+  const exploreHref = isEn ? `${base}pages/en/` : base;
+  const projectsHref = isEn ? `${base}pages/en-projects/` : `${base}pages/projects/`;
+  const contributionsHref = isEn ? `${base}pages/en-contributions/` : `${base}pages/contributions/`;
+  const guidesHref = isEn ? `${base}pages/en-guides/` : `${base}pages/guides/`;
+  const profileHref = isEn ? `${base}pages/en-profile/` : `${base}pages/profile/`;
+  const langHref = isEn ? base : `${base}pages/en/`;
+  const langLabel = isEn ? "ES" : "EN";
+
   const nav = [
-    `<a class="brand nav-home" href="${escapeHtml(base)}" aria-label="${escapeHtml("Inicio — Geroi Loyola")}">Geroi Loyola</a>`,
-    `<a class="nav-link" href="${escapeHtml(`${base}pages/ecosistema/`)}">${navIconHtml(NAV_ICONS.explore)}<span class="nav-txt">Ecosistema</span></a>`,
-    `<a class="nav-link" href="${escapeHtml(`${base}pages/portaless/`)}">${navIconHtml(NAV_ICONS.explore)}<span class="nav-txt">Portaless</span></a>`,
-    `<a class="nav-link" href="${escapeHtml(`${base}pages/guias/`)}">${navIconHtml(NAV_ICONS.posts)}<span class="nav-txt">Guías</span></a>`,
+    `<a class="brand nav-home" href="${escapeHtml(exploreHref)}" aria-label="${escapeHtml("Geroi Loyola — Explore")}">Geroi Loyola</a>`,
+    `<a class="nav-link" href="${escapeHtml(exploreHref)}"><span class="nav-txt">Explore</span></a>`,
     hasPosts
-      ? `<a class="nav-link" href="${escapeHtml(`${base}blog/`)}">${navIconHtml(NAV_ICONS.posts)}<span class="nav-txt">Blog</span></a>`
+      ? `<a class="nav-link" href="${escapeHtml(`${base}publications/`)}"><span class="nav-txt">Publications</span></a>`
       : "",
-    `<a class="nav-link" href="${escapeHtml(`${base}pages/en/`)}"><span class="nav-txt">EN</span></a>`,
+    `<a class="nav-link" href="${escapeHtml(projectsHref)}"><span class="nav-txt">Projects</span></a>`,
+    `<a class="nav-link" href="${escapeHtml(contributionsHref)}"><span class="nav-txt">Contributions</span></a>`,
+    `<a class="nav-link" href="${escapeHtml(guidesHref)}"><span class="nav-txt">Guides</span></a>`,
+    `<a class="nav-link" href="${escapeHtml(profileHref)}"><span class="nav-txt">Profile</span></a>`,
+    `<a class="nav-link nav-lang" href="${escapeHtml(langHref)}" hreflang="${isEn ? "es" : "en"}"><span class="nav-txt">${langLabel}</span></a>`,
   ].join("");
   const actions = [
     showSwitcher
@@ -61,6 +81,7 @@ export function renderPublicHeaderHtml(options: PublicHeaderOptions): string {
           text: t(locale, "home.otherLocaleName"),
         })
       : "",
+    themeToggleHtml(locale),
     headerActionsHtml(null, base),
   ].join("");
 

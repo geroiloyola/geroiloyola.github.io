@@ -814,3 +814,170 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
     transform: none;
   }
 }
+
+/* Alternador Claro/Oscuro en el header (CSP estricto: estado visual puro CSS) */
+.hdr-theme-toggle {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border, #CBD5E1);
+  background: var(--panel-bg, #FFFFFF);
+  color: var(--text, #0F172A);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.hdr-theme-toggle:hover {
+  border-color: var(--accent, #0369A1);
+  color: var(--accent-text, #0369A1);
+}
+
+.hdr-theme-toggle .icon-sun { display: none; }
+.hdr-theme-toggle .icon-moon { display: block; }
+
+:root[data-theme="dark"] .hdr-theme-toggle .icon-sun { display: block; }
+:root[data-theme="dark"] .hdr-theme-toggle .icon-moon { display: none; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hdr-theme-toggle .icon-sun { display: block; }
+  :root:not([data-theme="light"]) .hdr-theme-toggle .icon-moon { display: none; }
+}
+
+/* Pulido editorial tipo Reddit + mini-wiki para geroi-editorial */
+[data-theme-pack="geroi-editorial"] .site-nav {
+  gap: 0.25rem;
+}
+
+[data-theme-pack="geroi-editorial"] .site-nav .nav-link {
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+[data-theme-pack="geroi-editorial"] .site-nav .nav-link:hover {
+  background: color-mix(in srgb, var(--accent, #0369A1) 10%, transparent);
+}
+
+[data-theme-pack="geroi-editorial"] .site-nav .nav-lang {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--panel-border, #CBD5E1);
+}
+
+/* Sidebar ficha tipo Reddit en Columns ratio 2-1 */
+[data-theme-pack="geroi-editorial"] .ae-columns--ratio-2-1 {
+  align-items: start;
+}
+
+[data-theme-pack="geroi-editorial"] .ae-columns--ratio-2-1 > .ae-column-slot:last-child {
+  background: var(--panel-bg, #FFFFFF);
+  border: 1px solid var(--panel-border, #CBD5E1);
+  border-radius: var(--ve-card-radius, 16px);
+  padding: 1.25rem;
+  box-shadow: var(--elevation, none);
+}
+
+[data-theme-pack="geroi-editorial"] .ae-columns--ratio-2-1 > .ae-column-slot:last-child .ae-heading {
+  margin-block-start: 0;
+}
+
+[data-theme-pack="geroi-editorial"] .ae-columns--ratio-2-1 > .ae-column-slot:last-child .ae-feature-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+[data-theme-pack="geroi-editorial"] .ae-columns--ratio-2-1 > .ae-column-slot:last-child .ae-feature-card {
+  padding: 0.9rem 1rem;
+}
+
+[data-theme-pack="geroi-editorial"] .ae-link-list {
+  max-width: 100%;
+  margin: 0;
+}
+
+[data-theme-pack="geroi-editorial"] .ae-link-list h3 {
+  text-align: left;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted, #475569);
+  margin-bottom: 0.65rem;
+}
+
+[data-theme-pack="geroi-editorial"] .ae-link-list a {
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 0.92rem;
+  padding: 0.55rem 0.9rem;
+}
+
+/* Feed de Publications y breadcrumb en articulos */
+[data-theme-pack="geroi-editorial"] .pub-header {
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--panel-border, #CBD5E1);
+}
+
+[data-theme-pack="geroi-editorial"] .pub-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-text, #0369A1);
+  margin: 0 0 0.35rem;
+}
+
+[data-theme-pack="geroi-editorial"] .pub-intro {
+  color: var(--muted, #475569);
+  margin: 0.5rem 0 0;
+}
+
+[data-theme-pack="geroi-editorial"] .pub-feed {
+  display: grid;
+  gap: 1rem;
+}
+
+[data-theme-pack="geroi-editorial"] .pub-card {
+  padding: 1.25rem 1.4rem;
+  border-radius: var(--ve-card-radius, 16px);
+  border: 1px solid var(--panel-border, #CBD5E1);
+  background: var(--panel-bg, #FFFFFF);
+  box-shadow: var(--elevation, none);
+}
+
+[data-theme-pack="geroi-editorial"] .pub-card h2 {
+  margin: 0.45rem 0 0.4rem;
+  font-size: 1.25rem;
+}
+
+[data-theme-pack="geroi-editorial"] .pub-card h2 a {
+  color: var(--text, #0F172A);
+  text-decoration: none;
+}
+
+[data-theme-pack="geroi-editorial"] .pub-card h2 a:hover {
+  color: var(--accent-text, #0369A1);
+  text-decoration: underline;
+}
+
+[data-theme-pack="geroi-editorial"] .pub-breadcrumb {
+  margin-bottom: 1rem;
+}
+
+[data-theme-pack="geroi-editorial"] .pub-breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+  color: var(--accent-text, #0369A1);
+  text-decoration: none;
+}
+
+[data-theme-pack="geroi-editorial"] .pub-breadcrumb a:hover {
+  text-decoration: underline;
+}

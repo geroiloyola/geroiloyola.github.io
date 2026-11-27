@@ -1,0 +1,120 @@
+{
+  "version": "0.1",
+  "slug": "projects",
+  "title": "Projects — Open Source y Experiencia · Geroi Loyola",
+  "description": "Proyectos open source (Portaless, Verared, Gerarion, Tokenless) y portafolio/CV editable de sistemas privados y experiencia técnica.",
+  "theme": "geroi-editorial",
+  "root": [
+    {
+      "id": "proj-hero",
+      "type": "Hero",
+      "props": {
+        "variant": "spotlight",
+        "size": "lg",
+        "title": "Projects — Open Source y sistemas en producción",
+        "subtitle": "Cuatro piezas abiertas diseñadas con fronteras limpias, más un espacio estructurado tipo CV para documentar proyectos privados y experiencia profesional.",
+        "ctaLabel": "Read in English →",
+        "ctaHref": "/pages/en-projects/"
+      }
+    },
+    {
+      "id": "proj-spacer-1",
+      "type": "Spacer",
+      "props": {
+        "height": 20
+      }
+    },
+    {
+      "id": "proj-oss-h",
+      "type": "Heading",
+      "props": {
+        "text": "Open Source",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Ecosistema público",
+        "align": "left",
+        "size": "lg"
+      }
+    },
+    {
+      "id": "proj-oss-bento",
+      "type": "FeatureGrid",
+      "props": {
+        "title": "",
+        "layout": "bento",
+        "items": "server :: Portaless (AGPL-3.0) :: CMS soberano sobre Astro que compila a HTML estático con runtime opcional (Node/Docker o Cloudflare Pages + D1), editor Visual Elements, ThemePack v2 dual-mode, CSP estricto (A-07), servidor MCP nativo (19 herramientas) y sandbox de plugins. :: span=2 :: featured\npackage :: Gerarion :: [Editable] Describe aquí el problema que resuelve Gerarion, su arquitectura central y su estado actual.\nbot :: Tokenless :: [Editable] Describe aquí el propósito de Tokenless, sus principios de diseño y los flujos que habilita.\nshield :: Verared — Vera Trust Stack (Apache-2.0) :: 7 paquetes independientes en npm (@verared/net, apw, local-trust, reputation, trust-layer, cloud-images, identity-atproto) para identidad criptográfica did:apw, Web Bot Auth y políticas locales de confianza. :: span=2 :: featured"
+      }
+    },
+    {
+      "id": "proj-spacer-2",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
+      "id": "proj-cv-h",
+      "type": "Heading",
+      "props": {
+        "text": "Proyectos Privados y Experiencia (CV)",
+        "level": "h2",
+        "variant": "eyebrow",
+        "eyebrow": "Trayectoria · Editable",
+        "align": "left",
+        "size": "lg"
+      }
+    },
+    {
+      "id": "proj-cv-cols",
+      "type": "Columns",
+      "props": {
+        "count": 2,
+        "ratio": "2-1",
+        "gap": 24
+      },
+      "columnSlots": [
+        [
+          {
+            "id": "proj-cv-grid",
+            "type": "FeatureGrid",
+            "props": {
+              "title": "",
+              "items": "server :: [Editable] Rol / Sistema principal 1 :: Año – Presente · Empresa o cliente. Problema técnico resuelto, decisiones de arquitectura y métricas de impacto.\npackage :: [Editable] Rol / Sistema principal 2 :: Año – Año · Empresa o cliente. Stack utilizado (TypeScript, Node, Edge, SQL), integraciones críticas y resultados medibles.\nshield :: [Editable] Consultoría / Arquitectura privada :: Proyectos bajo NDA, auditorías de seguridad web (CSP, auth, límites de arquitectura) y migraciones sin downtime."
+            }
+          }
+        ],
+        [
+          {
+            "id": "proj-cv-sidebar-h",
+            "type": "Heading",
+            "props": {
+              "text": "Resumen técnico",
+              "level": "h3",
+              "align": "left"
+            }
+          },
+          {
+            "id": "proj-cv-sidebar-p",
+            "type": "Paragraph",
+            "props": {
+              "text": "[Editable] Actualiza este bloque desde /admin/editor?slug=projects para añadir tu disponibilidad, años de experiencia o enlace a CV en PDF."
+            }
+          },
+          {
+            "id": "proj-cv-links",
+            "type": "LinkList",
+            "props": {
+              "title": "Relacionado",
+              "buttonStyle": "outline",
+              "links": [
+                { "label": "Ver Contributions FOSS →", "url": "/pages/contributions/", "enabled": true },
+                { "label": "Leer Guides de Portaless →", "url": "/pages/guides/", "enabled": true },
+                { "label": "Ir a Profile →", "url": "/pages/profile/", "enabled": true }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ]
+}

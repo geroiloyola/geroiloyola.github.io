@@ -162,12 +162,14 @@ describe("FeatureGrid Bento Grid y tarjetas span=2", () => {
     for (const rel of [
       "site-profiles/starter/home.json",
       "site-profiles/starter/pages/en.json",
-      "site-profiles/starter/pages/ecosistema.json",
-      "site-profiles/starter/pages/en-ecosystem.json",
-      "site-profiles/starter/pages/guias.json",
+      "site-profiles/starter/pages/projects.json",
+      "site-profiles/starter/pages/en-projects.json",
+      "site-profiles/starter/pages/contributions.json",
+      "site-profiles/starter/pages/en-contributions.json",
+      "site-profiles/starter/pages/guides.json",
       "site-profiles/starter/pages/en-guides.json",
-      "site-profiles/starter/pages/portaless.json",
-      "site-profiles/starter/pages/en-portaless.json",
+      "site-profiles/starter/pages/profile.json",
+      "site-profiles/starter/pages/en-profile.json",
     ]) {
       const layout = JSON.parse(readFileSync(join(root, rel), "utf8"));
       expect(validatePageLayout(layout).valid, rel).toBe(true);

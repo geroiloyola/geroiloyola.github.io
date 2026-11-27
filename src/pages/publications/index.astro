@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { ecosystemPageTheme, ecosystemPageThemeModes } from "../../lib/ecosystem-theme";
+import { publishedPosts } from "../../lib/llms-txt";
+
+const posts = publishedPosts(await getCollection("posts"));
+const base = import.meta.env.BASE_URL;
+const pageTheme = ecosystemPageTheme();
+const pageThemeModes = ecosystemPageThemeModes();
+---
+<BaseLayout
+  title="Publications — Geroi Loyola"
+  description="Artículos técnicos, notas de arquitectura y guías sobre TypeScript, agentes de IA, Portaless y Verared."
+  pageTheme={pageTheme}
+  pageThemeModes={pageThemeModes}
+>
+  <section class="pub-header">
+    <p class="pub-eyebrow">Publications</p>
+    <h1>Publications</h1>
+    <p class="pub-intro">Artículos técnicos, notas de arquitectura web, protocolos verificables para agentes de IA y lecciones reales construyendo en abierto.</p>
+  </section>
+
+  {posts.length === 0 && <p class="empty-state">Todavía no hay publicaciones.</p>}
+  <div class="pub-feed">
+    {posts.map((post) => (
+      <article class="card pub-card">
+        <div class="pub-meta">
+          <span class="badge">{post.data.pubDate.toLocaleDateString("es-CL")}</span>
+        </div>
+        <h2><a href={`${base}blog/${post.id}/`}>{post.data.title}</a></h2>
+        {post.data.description && <p>{post.data.description}</p>}
+      </article>
+    ))}
+  </div>
+</BaseLayout>
