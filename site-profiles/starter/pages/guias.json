@@ -3,7 +3,7 @@
   "slug": "guias",
   "title": "Guías prácticas — TypeScript, Agentes e IA y Arquitectura Web",
   "description": "Rutas estructuradas de aprendizaje práctico sobre TypeScript modular, agentes de IA con MCP y Web Bot Auth, y arquitectura web sin dependencias frágiles.",
-  "theme": "portaless-nocturno",
+  "theme": "geroi-editorial",
   "root": [
     {
       "id": "guias-hero",
@@ -85,7 +85,10 @@
     {
       "id": "guias-nav",
       "type": "Columns",
-      "props": { "count": 2, "gap": 16 },
+      "props": {
+        "count": 2,
+        "gap": 16
+      },
       "columnSlots": [
         [
           {

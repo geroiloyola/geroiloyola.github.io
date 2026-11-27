@@ -10,7 +10,7 @@ import {
   themeStyleDecl,
 } from "@portaless/atomic-elements/themes";
 
-export const ECOSYSTEM_THEME = "portaless-nocturno";
+export const ECOSYSTEM_THEME = "geroi-editorial";
 
 export function ecosystemPageTheme(): { name: string; css: string } | undefined {
   const resolved = resolveThemePack(BUILTIN_THEMES, ECOSYSTEM_THEME);

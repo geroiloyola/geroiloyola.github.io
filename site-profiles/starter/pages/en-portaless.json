@@ -3,7 +3,7 @@
   "slug": "en-portaless",
   "title": "Master Portaless — Practical Guide",
   "description": "How to clone Portaless, edit your home page (/) visually, choose between GitHub Pages, Cloudflare Pages, or Self-host, and leverage strict CSP.",
-  "theme": "portaless-nocturno",
+  "theme": "geroi-editorial",
   "root": [
     {
       "id": "en-port-hero",
@@ -59,7 +59,10 @@
     {
       "id": "en-port-nav",
       "type": "Columns",
-      "props": { "count": 2, "gap": 16 },
+      "props": {
+        "count": 2,
+        "gap": 16
+      },
       "columnSlots": [
         [
           {

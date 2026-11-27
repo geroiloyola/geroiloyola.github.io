@@ -3,7 +3,7 @@
   "slug": "en-guides",
   "title": "Practical Guides — TypeScript, AI Agents & Web Architecture",
   "description": "Structured hands-on learning tracks on modular TypeScript, AI agents with MCP and Web Bot Auth, and resilient web architecture.",
-  "theme": "portaless-nocturno",
+  "theme": "geroi-editorial",
   "root": [
     {
       "id": "en-guides-hero",
@@ -85,7 +85,10 @@
     {
       "id": "en-guides-nav",
       "type": "Columns",
-      "props": { "count": 2, "gap": 16 },
+      "props": {
+        "count": 2,
+        "gap": 16
+      },
       "columnSlots": [
         [
           {

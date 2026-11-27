@@ -3,7 +3,7 @@
   "slug": "home",
   "title": "Geroi Loyola — TypeScript, IA, Agentes y Arquitectura Web",
   "description": "Hub personal de creación y educación técnica sobre TypeScript, agentes de IA, protocolo web verificable y el ecosistema Portaless, Verared, Gerarion y Tokenless.",
-  "theme": "portaless-nocturno",
+  "theme": "geroi-editorial",
   "root": [
     {
       "id": "hub-hero",
@@ -20,7 +20,10 @@
     {
       "id": "hub-quick-actions",
       "type": "Columns",
-      "props": { "count": 3, "gap": 16 },
+      "props": {
+        "count": 3,
+        "gap": 16
+      },
       "columnSlots": [
         [
           {
@@ -61,6 +64,13 @@
       ]
     },
     {
+      "id": "rhythm-spacer-hub-ecosystem-h",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
       "id": "hub-ecosystem-h",
       "type": "Heading",
       "props": {
@@ -83,7 +93,10 @@
     {
       "id": "hub-ecosystem-links",
       "type": "Columns",
-      "props": { "count": 2, "gap": 16 },
+      "props": {
+        "count": 2,
+        "gap": 16
+      },
       "columnSlots": [
         [
           {
@@ -112,6 +125,13 @@
       ]
     },
     {
+      "id": "rhythm-spacer-hub-learning-h",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
       "id": "hub-learning-h",
       "type": "Heading",
       "props": {
@@ -132,11 +152,25 @@
       }
     },
     {
+      "id": "rhythm-spacer-hub-posts",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
       "id": "hub-posts",
       "type": "PostList",
       "props": {
         "title": "Últimos artículos técnicos",
         "limit": 6
+      }
+    },
+    {
+      "id": "rhythm-spacer-hub-contact-h",
+      "type": "Spacer",
+      "props": {
+        "height": 24
       }
     },
     {

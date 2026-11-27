@@ -282,4 +282,27 @@ export const BUILTIN_THEMES: readonly ThemePack[] = [
       "--danger-fg": "#E8968C",
     },
   },
+  {
+    name: "geroi-editorial",
+    displayName: "Geroi Editorial",
+    description:
+      "Tema técnico editorial oscuro guiado por ui-ux-pro-max: pizarra profunda, contraste WCAG AA/AAA en texto primario y secundario, bordes definidos y acento cian/ámbar.",
+    vars: {
+      "--bg": "#0B0F17",
+      "--panel-bg": "#131A26",
+      "--panel-border": "#263247",
+      "--text": "#F3F6FC",
+      "--muted": "#A8B5CC",
+      "--accent": "#38BDF8",
+      "--accent-text": "#7DD3FC",
+      "--accent-2": "#F59E0B",
+      "--radius": "12px",
+      "--success-bg": "#112822",
+      "--success-fg": "#6EE7B7",
+      "--warning-bg": "#2C2010",
+      "--warning-fg": "#FCD34D",
+      "--danger-bg": "#2E151B",
+      "--danger-fg": "#FDA4AF",
+    },
+  },
 ];

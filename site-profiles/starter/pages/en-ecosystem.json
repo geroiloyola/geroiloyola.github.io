@@ -3,7 +3,7 @@
   "slug": "en-ecosystem",
   "title": "Ecosystem — Portaless, Verared, Gerarion & Tokenless",
   "description": "How Portaless, Verared, Gerarion, and Tokenless connect: purpose, architecture, and roadmap of all four creations.",
-  "theme": "portaless-nocturno",
+  "theme": "geroi-editorial",
   "root": [
     {
       "id": "en-eco-hero",
@@ -92,7 +92,10 @@
     {
       "id": "en-eco-nav",
       "type": "Columns",
-      "props": { "count": 2, "gap": 16 },
+      "props": {
+        "count": 2,
+        "gap": 16
+      },
       "columnSlots": [
         [
           {

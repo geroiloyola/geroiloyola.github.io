@@ -3,7 +3,7 @@
   "slug": "en",
   "title": "Geroi Loyola — TypeScript, AI, Agents & Web Architecture",
   "description": "Personal creator and technical education hub focused on TypeScript, AI agents, verifiable web protocols, and the Portaless, Verared, Gerarion, and Tokenless ecosystem.",
-  "theme": "portaless-nocturno",
+  "theme": "geroi-editorial",
   "root": [
     {
       "id": "en-hero",
@@ -20,7 +20,10 @@
     {
       "id": "en-quick-actions",
       "type": "Columns",
-      "props": { "count": 3, "gap": 16 },
+      "props": {
+        "count": 3,
+        "gap": 16
+      },
       "columnSlots": [
         [
           {
@@ -61,6 +64,13 @@
       ]
     },
     {
+      "id": "rhythm-spacer-en-ecosystem-h",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
       "id": "en-ecosystem-h",
       "type": "Heading",
       "props": {
@@ -83,7 +93,10 @@
     {
       "id": "en-ecosystem-links",
       "type": "Columns",
-      "props": { "count": 2, "gap": 16 },
+      "props": {
+        "count": 2,
+        "gap": 16
+      },
       "columnSlots": [
         [
           {
@@ -112,6 +125,13 @@
       ]
     },
     {
+      "id": "rhythm-spacer-en-learning-h",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
       "id": "en-learning-h",
       "type": "Heading",
       "props": {
@@ -132,11 +152,25 @@
       }
     },
     {
+      "id": "rhythm-spacer-en-posts",
+      "type": "Spacer",
+      "props": {
+        "height": 24
+      }
+    },
+    {
       "id": "en-posts",
       "type": "PostList",
       "props": {
         "title": "Latest technical articles",
         "limit": 6
+      }
+    },
+    {
+      "id": "rhythm-spacer-en-contact-h",
+      "type": "Spacer",
+      "props": {
+        "height": 24
       }
     },
     {
