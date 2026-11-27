@@ -52,7 +52,8 @@ export function renderPublicHeaderHtml(options: PublicHeaderOptions): string {
     ? languageAlternate
     : { href: `${baseNoSlash}${localePath(other, alternatePath ?? "/")}`, hreflang: other };
 
-  const exploreHref = isEn ? `${base}pages/en/` : base;
+  const homeHref = base;
+  const exploreHref = `${base}explore/`;
   const projectsHref = isEn ? `${base}pages/en-projects/` : `${base}pages/projects/`;
   const contributionsHref = isEn ? `${base}pages/en-contributions/` : `${base}pages/contributions/`;
   const guidesHref = isEn ? `${base}pages/en-guides/` : `${base}pages/guides/`;
@@ -61,7 +62,7 @@ export function renderPublicHeaderHtml(options: PublicHeaderOptions): string {
   const langLabel = isEn ? "ES" : "EN";
 
   const nav = [
-    `<a class="brand nav-home" href="${escapeHtml(exploreHref)}" aria-label="${escapeHtml("Geroi Loyola — Explore")}">Geroi Loyola</a>`,
+    `<a class="brand nav-home" href="${escapeHtml(homeHref)}" aria-label="${escapeHtml("Geroi Loyola — Inicio")}">Geroi Loyola</a>`,
     `<a class="nav-link" href="${escapeHtml(exploreHref)}"><span class="nav-txt">Explore</span></a>`,
     hasPosts
       ? `<a class="nav-link" href="${escapeHtml(`${base}publications/`)}"><span class="nav-txt">Publications</span></a>`

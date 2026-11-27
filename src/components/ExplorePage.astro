@@ -21,8 +21,8 @@ const { locale } = Astro.props;
 
 const COPY = {
   en: {
-    title: "Explore — Portaless",
-    description: "Browse by category the sites, profiles, publications and documentation made with Portaless.",
+    title: "Explore — Geroi Loyola",
+    description: "Browse by category the pages and publications of Geroi Loyola.",
     heading: "Explore",
     intro: "Everything this site publishes, grouped by category so you find it fast — you or an AI agent. The classification is automatic, from each page's content.",
     orderBy: "Order by",
@@ -63,8 +63,8 @@ const COPY = {
     dateLocale: "en-US",
   },
   es: {
-    title: "Explore — Portaless",
-    description: "Descubrí por categoría los sitios, perfiles, publicaciones y documentación hechos con Portaless.",
+    title: "Explore — Geroi Loyola",
+    description: "Explora por categoría las páginas y publicaciones de Geroi Loyola.",
     heading: "Explore",
     intro: "Todo lo que este sitio publica, agrupado por categoría para que lo encuentres rápido — vos o un agente de IA. La clasificación es automática (por el contenido de cada página).",
     orderBy: "Order by",
@@ -365,7 +365,7 @@ const profilesLabel = profile.isDemo ? c.chips.demoProfiles : c.chips.profiles;
   .explore-order-pill input { position: absolute; opacity: 0; width: 1px; height: 1px; }
   .explore-order-pill span { display: inline-block; padding: 5px 14px; border-radius: 999px; font-size: 0.82rem; font-weight: 600; color: var(--muted, #6e6653); text-transform: capitalize; transition: background 0.15s ease, color 0.15s ease; }
   .explore-order-pill span:hover { color: var(--text, #261c15); }
-  .explore-order-pill input:checked + span { background: var(--accent, #c5d86d); color: #261c15; }
+  .explore-order-pill input:checked + span { background: var(--accent, #c5d86d); color: var(--ve-btn-fg, #261c15); }
   .explore-order-pill input:focus-visible + span { outline: 2px solid var(--accent-text, #5a6b24); outline-offset: 2px; }
   .explore-order-status { font-size: 0.82rem; color: var(--muted, #6e6653); margin: 6px 0 0; max-width: 80ch; }
 </style>

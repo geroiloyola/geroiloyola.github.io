@@ -1,7 +1,7 @@
 {
   "version": "0.1",
   "slug": "home",
-  "title": "Geroi Loyola — Explore · TypeScript, IA, Agentes y Arquitectura Web",
+  "title": "Geroi Loyola — TypeScript, IA, Agentes y Arquitectura Web",
   "description": "Hub personal editorial y mini-wiki de Geroi Loyola: proyectos open source (Portaless, Verared, Gerarion, Tokenless), publicaciones técnicas y guías prácticas.",
   "theme": "geroi-editorial",
   "root": [
@@ -13,8 +13,8 @@
         "size": "lg",
         "title": "TypeScript, IA, Agentes y Arquitectura Web sin cajas negras",
         "subtitle": "Soy Geroi Loyola. Construyo software abierto, protocolos verificables para agentes de IA y guías prácticas para recuperar el control de tu infraestructura web.",
-        "ctaLabel": "Explorar Projects",
-        "ctaHref": "/pages/projects/"
+        "ctaLabel": "Abrir Explore →",
+        "ctaHref": "/explore/"
       }
     },
     {
@@ -31,7 +31,7 @@
         "text": "Ecosistema activo",
         "level": "h2",
         "variant": "eyebrow",
-        "eyebrow": "Explore · Projects",
+        "eyebrow": "Projects · Open Source",
         "align": "left",
         "size": "lg"
       }
@@ -95,11 +95,11 @@
       "columnSlots": [
         [
           {
-            "id": "explore-btn-publications",
+            "id": "explore-btn-explore",
             "type": "Button",
             "props": {
-              "label": "Ver Publications →",
-              "href": "/publications/",
+              "label": "Explorar todo (/explore/) →",
+              "href": "/explore/",
               "variant": "solid",
               "size": "sm"
             }
