@@ -50,6 +50,11 @@
   --shadow-md: 0 4px 12px rgba(38, 28, 21, 0.08), 0 2px 4px rgba(38, 28, 21, 0.05);
   --transition-fast: 150ms ease;
 
+  /* ThemePack v2 — tokens editoriales opcionales con fallbacks neutros para
+     no alterar ningun tema existente que no los declare. */
+  --space-section: 0px;
+  --elevation: none;
+
   /* Step 5 — radio por ROL, no un unico valor para todo:
      botones 8px (rectangulares, nunca pill), inputs 6px; --radius (22px)
      sigue siendo el radio de tarjetas/paneles. */
@@ -641,38 +646,67 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
   text-align: center;
 }
 
+/* ThemePack v2 — conexion de los 4 tokens editoriales opcionales.
+   --font-display y --font-sans ya se consumen en :root/body/h1-h3; aqui
+   conectamos --elevation (default: none) y --space-section (default: 0px)
+   para que cualquier tema que los declare los herede sin alterar los
+   temas existentes. */
+[data-theme-pack] .ae-feature-card,
+[data-theme-pack] .ae-post-card {
+  box-shadow: var(--elevation, none);
+}
+
+[data-theme-pack] .ae-heading,
+[data-theme-pack] .ae-post-list {
+  margin-block-start: var(--space-section, 0px);
+}
+
+/* Visual Elements CSS-first tokens (--ve-*): puente hacia los tokens del
+   ThemePack/skin (--bg, --panel-bg, --accent, --radius, --space-section,
+   --elevation) para sobreescrituras limpias por tema sin estilos inline. */
+:root {
+  --ve-card-bg: var(--panel-bg, #FFFFFF);
+  --ve-card-border: var(--panel-border, #E4E6C3);
+  --ve-card-radius: var(--radius-card, 16px);
+  --ve-card-padding: var(--space-5, 24px);
+  --ve-card-elevation: var(--elevation, none);
+  --ve-btn-bg: var(--accent, #C5D86D);
+  --ve-btn-fg: #261C15;
+  --ve-btn-radius: var(--radius-button, 8px);
+  --ve-btn-outline-fg: var(--accent-text, #5A6B24);
+  --ve-btn-outline-border: var(--accent, #C5D86D);
+  --ve-btn-ghost-fg: var(--accent-text, #5A6B24);
+  --ve-hero-radius: var(--radius, 22px);
+}
+
 /* ---------------------------------------------------------------------------
-   Tema "geroi-editorial" (ui-ux-pro-max):
-   - Contraste WCAG AA/AAA en texto primario (#F3F6FC) y secundario (#A8B5CC)
-   - Ritmo tipográfico editorial (text-wrap: balance, medida legible <=68ch)
-   - Superficies elevadas con borde visible en modo oscuro y micro-interacciones
-     sin layout shift (prefers-reduced-motion respetado al 100%)
-   - Objetivos táctiles >=44px, focus-visible nítido y scroll-margin-top para
-     no ocultar el foco bajo el header sticky
-   - 100% CSS externo (cero scripts inline, CSP estricto A-07 intacto)
+   Tema "geroi-editorial" (ThemePack v2 dual-mode Claro/Oscuro):
+   Los tokens de color, radio, tipografía, ritmo (--space-section) y elevación
+   (--elevation / --ve-*) viven nativamente en ThemePack v2 y elements.css.
+   Aquí solo conservamos los toques editoriales genuinos y el contraste dual.
    --------------------------------------------------------------------------- */
+:root[data-theme-pack="geroi-editorial"] {
+  --ve-btn-fg: #FFFFFF;
+}
+
+:root[data-theme-pack="geroi-editorial"][data-theme="dark"] {
+  --ve-btn-fg: #0B0F17;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme-pack="geroi-editorial"]:not([data-theme="light"]) {
+    --ve-btn-fg: #0B0F17;
+  }
+}
+
 [data-theme-pack="geroi-editorial"] body {
   background:
-    radial-gradient(1080px 540px at 50% -10%, rgba(56, 189, 248, 0.13), transparent 62%),
-    radial-gradient(760px 440px at 88% 6%, rgba(245, 158, 11, 0.08), transparent 58%),
-    var(--bg, #0B0F17);
+    radial-gradient(1080px 540px at 50% -10%, color-mix(in srgb, var(--accent, #0369A1) 9%, transparent), transparent 62%),
+    radial-gradient(760px 440px at 88% 6%, color-mix(in srgb, var(--accent-2, #B45309) 6%, transparent), transparent 58%),
+    var(--bg, #F8FAFC);
   background-attachment: fixed;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
-}
-
-[data-theme-pack="geroi-editorial"] body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 68%);
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 68%);
 }
 
 [data-theme-pack="geroi-editorial"] header.site-header {
@@ -680,10 +714,10 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
   top: 0;
   z-index: 20;
   padding-top: env(safe-area-inset-top, 0px);
-  background: rgba(11, 15, 23, 0.82);
+  background: color-mix(in srgb, var(--bg, #F8FAFC) 86%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--panel-border, #263247);
+  border-bottom: 1px solid var(--panel-border, #CBD5E1);
 }
 
 [data-theme-pack="geroi-editorial"] main.container {
@@ -700,10 +734,26 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 }
 
 [data-theme-pack="geroi-editorial"] .ae-hero-spotlight-title {
+  background: linear-gradient(102deg, #0F172A 0%, #0369A1 58%, #0284C7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+:root[data-theme-pack="geroi-editorial"][data-theme="dark"] .ae-hero-spotlight-title {
   background: linear-gradient(102deg, #F8FAFC 0%, #BAE6FD 52%, #38BDF8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme-pack="geroi-editorial"]:not([data-theme="light"]) .ae-hero-spotlight-title {
+    background: linear-gradient(102deg, #F8FAFC 0%, #BAE6FD 52%, #38BDF8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }
 
 [data-theme-pack="geroi-editorial"] p,
@@ -712,13 +762,12 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 }
 
 [data-theme-pack="geroi-editorial"] .ae-icon {
-  color: var(--accent-text, #7DD3FC);
+  color: var(--accent-text, #0369A1);
 }
 
 [data-theme-pack="geroi-editorial"] .ae-feature-card,
 [data-theme-pack="geroi-editorial"] .ae-post-card,
 [data-theme-pack="geroi-editorial"] .card {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 8px 24px -16px rgba(0, 0, 0, 0.65);
   transition: border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1),
               transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -728,8 +777,7 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 [data-theme-pack="geroi-editorial"] .ae-post-card:hover,
 [data-theme-pack="geroi-editorial"] .card:hover {
   transform: translateY(-2px);
-  border-color: var(--accent, #38BDF8);
-  box-shadow: 0 1px 0 rgba(56, 189, 248, 0.14) inset, 0 14px 32px -18px rgba(56, 189, 248, 0.28);
+  border-color: var(--accent, #0369A1);
 }
 
 [data-theme-pack="geroi-editorial"] .ae-hero-cta,
@@ -746,13 +794,9 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 [data-theme-pack="geroi-editorial"] a:focus-visible,
 [data-theme-pack="geroi-editorial"] button:focus-visible,
 [data-theme-pack="geroi-editorial"] summary:focus-visible {
-  outline: 2px solid var(--accent, #38BDF8);
+  outline: 2px solid var(--accent, #0369A1);
   outline-offset: 3px;
   border-radius: 6px;
-}
-
-[data-theme-pack="geroi-editorial"] .ae-columns .ae-column-slot {
-  text-align: center;
 }
 
 @media (prefers-reduced-motion: reduce) {

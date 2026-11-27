@@ -17,10 +17,10 @@ import { InMemoryUsageLedgerStore } from "@verared/trust-layer/ledger";
 import { CapabilityDeniedError } from "../../packages/mcp-server/src/permissions/require-capability";
 import { registerApplyThemeTool } from "../../packages/mcp-server/src/tools/apply-theme";
 import { registerListThemesTool } from "../../packages/mcp-server/src/tools/list-themes";
-import { BUILTIN_THEMES, availableThemes } from "../../packages/atomic-elements/src/themes/theme-pack";
-import type { ThemePack } from "../../packages/atomic-elements/src/themes/theme-pack";
+import { BUILTIN_THEMES, availableThemes } from "../../packages/visual-elements/src/themes/theme-pack";
+import type { ThemePack } from "../../packages/visual-elements/src/themes/theme-pack";
 import type { AuditLogEntry, AuditLogStore } from "../../packages/mcp-server/src/audit/types";
-import type { PageLayout } from "../../packages/atomic-elements/src/types";
+import type { PageLayout } from "../../packages/visual-elements/src/types";
 
 type ToolHandler = (
   args: Record<string, unknown>,
@@ -143,8 +143,9 @@ describe("list_themes", () => {
     const h = await harness();
     const res = await h.list({}, h.extra);
     const parsed = JSON.parse(res.content[0].text);
-    expect(parsed.themes).toHaveLength(2);
+    expect(parsed.themes).toHaveLength(BUILTIN_THEMES.length);
     expect(parsed.themes[0]).toMatchObject({ name: "2pac-dark", source: "builtin" });
+    expect(parsed.themes.map((t: any) => t.name)).toContain("portaless-editorial");
     expect(parsed.themes[0].vars["--bg"]).toBe("#14100C");
     expect(parsed.themes[0].vars["--radius"]).toBeUndefined(); // no declarado: hereda
     expect(parsed.themes[1]).toMatchObject({ name: "portaless-nocturno", source: "builtin" });

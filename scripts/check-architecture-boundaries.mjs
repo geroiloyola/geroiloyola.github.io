@@ -47,7 +47,7 @@ export const PACKAGE_LAYERS = Object.freeze({
   "email-transport": { layer: "Node-L0", org: "geroiloyola" },
   "trust-storage-adapters": { layer: "Node-L0", org: "geroiloyola" },
   // L3 CMS kernel
-  "atomic-elements": { layer: "L3", org: "geroiloyola" },
+  "visual-elements": { layer: "L3", org: "geroiloyola" },
   "deploy-engine": { layer: "L3", org: "geroiloyola" },
   auth: { layer: "L3", org: "geroiloyola" },
   dashboard: { layer: "L3", org: "geroiloyola" },
@@ -68,16 +68,16 @@ export const PACKAGE_LAYERS = Object.freeze({
   scripts: { layer: "L5", org: "geroiloyola" },
 });
 
-// Explicit acyclic intra-layer edges permitted by ARCHITECTURE.md §3.
+// Explicit acyclic intra-layer edges permitted by docs/architecture/ARCHITECTURE.md §3.
 export const INTRA_LAYER_ALLOWLIST = new Set([
   "cloud-images->trust-layer",
   "identity-atproto->trust-layer",
   "persistence-migrations->sqlite-driver",
   "trust-storage-adapters->sqlite-driver",
-  "deploy-engine->atomic-elements",
+  "deploy-engine->visual-elements",
   "dashboard->auth",
   "plugin-sandbox->permissions",
-  "onboarding->atomic-elements",
+  "onboarding->visual-elements",
 ]);
 
 const ALLOWED_TARGET_LAYERS = Object.freeze({

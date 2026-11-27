@@ -8,7 +8,7 @@
 // PR D (llms.txt): cada post declara su version markdown con rel="alternate".
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection, render } from "astro:content";
-import { ecosystemPageTheme } from "../../lib/ecosystem-theme";
+import { ecosystemPageTheme, ecosystemPageThemeModes } from "../../lib/ecosystem-theme";
 import { isPubliclyPublishable } from "@portaless/deploy-engine/draft-filter";
 
 export async function getStaticPaths() {
@@ -30,8 +30,9 @@ const { Content } = await render(post);
 const profile = getSiteProfileConfig(process.env);
 const markdownUrl = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/blog/${post.id}.md`;
 const pageTheme = ecosystemPageTheme();
+const pageThemeModes = ecosystemPageThemeModes();
 ---
-<BaseLayout title={`${post.data.title} — Portaless`} description={post.data.description} markdownUrl={markdownUrl} pageTheme={pageTheme}>
+<BaseLayout title={`${post.data.title} — Portaless`} description={post.data.description} markdownUrl={markdownUrl} pageTheme={pageTheme} pageThemeModes={pageThemeModes}>
   <article>
     <h1>{post.data.title}</h1>
     <p class="badge">{post.data.pubDate.toLocaleDateString(profile.isDemo ? "es-CL" : "en-US")}</p>

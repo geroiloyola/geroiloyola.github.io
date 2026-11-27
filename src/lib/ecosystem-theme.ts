@@ -6,13 +6,28 @@
 // pagina (es un theme pack, no un color fijo).
 import {
   BUILTIN_THEMES,
+  hasDualMode,
   resolveThemePack,
   themeStyleDecl,
-} from "@portaless/atomic-elements/themes";
+  themeStyleDeclForMode,
+} from "@portaless/visual-elements/themes";
 
 export const ECOSYSTEM_THEME = "geroi-editorial";
 
 export function ecosystemPageTheme(): { name: string; css: string } | undefined {
   const resolved = resolveThemePack(BUILTIN_THEMES, ECOSYSTEM_THEME);
-  return resolved ? { name: resolved.name, css: themeStyleDecl(resolved) } : undefined;
+  if (!resolved) return undefined;
+  const css = hasDualMode(resolved)
+    ? themeStyleDeclForMode(resolved, "light")
+    : themeStyleDecl(resolved);
+  return { name: resolved.name, css };
+}
+
+export function ecosystemPageThemeModes(): { lightCss: string; darkCss: string } | undefined {
+  const resolved = resolveThemePack(BUILTIN_THEMES, ECOSYSTEM_THEME);
+  if (!resolved || !hasDualMode(resolved)) return undefined;
+  return {
+    lightCss: themeStyleDeclForMode(resolved, "light"),
+    darkCss: themeStyleDeclForMode(resolved, "dark"),
+  };
 }

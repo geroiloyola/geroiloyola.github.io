@@ -87,7 +87,8 @@
       "type": "FeatureGrid",
       "props": {
         "title": "",
-        "items": "server :: Portaless :: CMS web moderno sobre Astro con CSP estricto sin unsafe-inline, editor visual (Atomic Elements), SQLite/D1 y despliegue en Node, Cloudflare Pages o GitHub Pages.\nshield :: Verared :: Infraestructura abierta de confianza, identidad criptográfica verificable (did:apw), Web Bot Auth y protocolo para agentes web (@verared/* en npm).\npackage :: Gerarion :: [Editable] Espacio dedicado a explicar qué problema resuelve Gerarion, su arquitectura central y cómo encaja dentro del ecosistema.\nbot :: Tokenless :: [Editable] Espacio dedicado a detallar el propósito de Tokenless, sus principios de diseño y los casos de uso que habilita."
+        "layout": "bento",
+        "items": "server :: Portaless :: CMS web moderno sobre Astro con CSP estricto sin unsafe-inline, editor visual (Visual Elements), ThemePack v2 dual-mode, SQLite/D1 y despliegue en Node, Cloudflare Pages o GitHub Pages. :: span=2 :: featured\npackage :: Gerarion :: [Editable] Espacio dedicado a explicar qué problema resuelve Gerarion, su arquitectura central y cómo encaja dentro del ecosistema.\nbot :: Tokenless :: [Editable] Espacio dedicado a detallar el propósito de Tokenless, sus principios de diseño y los casos de uso que habilita.\nshield :: Verared :: Infraestructura abierta de confianza, identidad criptográfica verificable (did:apw), Web Bot Auth y Local Trust Protocol en 7 paquetes independientes (@verared/* en npm). :: span=2 :: featured"
       }
     },
     {
@@ -95,27 +96,35 @@
       "type": "Columns",
       "props": {
         "count": 2,
-        "gap": 16
+        "ratio": "2-1",
+        "gap": 20
       },
       "columnSlots": [
         [
           {
-            "id": "hub-btn-eco-detail",
-            "type": "Button",
+            "id": "hub-eco-summary",
+            "type": "Paragraph",
             "props": {
-              "label": "Explorar las 4 creaciones en detalle",
-              "href": "/pages/ecosistema/",
-              "variant": "solid",
-              "size": "sm"
+              "text": "Cada pieza del ecosistema tiene fronteras explícitas, cero ciclos de dependencia y portabilidad total: puedes empezar en GitHub Pages gratis y escalar a Cloudflare Pages o Docker sin reescribir tu contenido."
             }
           }
         ],
         [
           {
+            "id": "hub-btn-eco-detail",
+            "type": "Button",
+            "props": {
+              "label": "Explorar ecosistema →",
+              "href": "/pages/ecosistema/",
+              "variant": "solid",
+              "size": "sm"
+            }
+          },
+          {
             "id": "hub-btn-portaless-guide",
             "type": "Button",
             "props": {
-              "label": "Guía práctica de Portaless",
+              "label": "Guía de Portaless",
               "href": "/pages/portaless/",
               "variant": "outline",
               "size": "sm"
@@ -188,7 +197,7 @@
       "id": "hub-contact-p",
       "type": "Paragraph",
       "props": {
-        "text": "Este sitio está construido 100% con Portaless (perfil starter + bloques Atomic Elements). Puedes seguir los repositorios públicos del ecosistema en GitHub (github.com/geroiloyola) o editar este bloque cuando quieras añadir tus canales de contacto oficiales."
+        "text": "Este sitio está construido 100% con Portaless (perfil starter + bloques Visual Elements). Puedes seguir los repositorios públicos del ecosistema en GitHub (github.com/geroiloyola) o editar este bloque cuando quieras añadir tus canales de contacto oficiales."
       }
     }
   ]

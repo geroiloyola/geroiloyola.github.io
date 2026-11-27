@@ -4,8 +4,8 @@
 // texto"), columnas, y la lista de publicaciones (datos inyectados en build,
 // limite, estado vacio honesto, y escape de XSS en todos).
 import { describe, it, expect } from "vitest";
-import { elementRegistry, elementPalette } from "../../packages/atomic-elements/src/elements/registry";
-import { CONTENT_ICON_NAMES } from "../../packages/atomic-elements/src/elements/icons";
+import { elementRegistry, elementPalette } from "../../packages/visual-elements/src/elements/registry";
+import { CONTENT_ICON_NAMES } from "../../packages/visual-elements/src/elements/icons";
 
 describe("Icon", () => {
   it("renderiza el SVG del nombre pedido, con currentColor y caja de 24px", () => {
@@ -42,7 +42,7 @@ describe("FeatureGrid", () => {
     expect(html).toContain("Vos sos dueno del estado.");
     expect(html).toContain("Identidad");
     expect(html).toContain("<svg"); // los iconos
-    expect(html).toContain("repeat(auto-fit, minmax(min(100%, 280px), 1fr))"); // responsive, sin desborde
+    expect(html).not.toMatch(/<(?:section|div|article|h2|h3|p)[^>]*\sstyle=/); // CSS-first: sin estilos inline rigidos en FeatureGrid
   });
 
   it("sin items muestra el estado vacio honesto (no una grilla rota)", () => {

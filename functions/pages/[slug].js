@@ -24,11 +24,11 @@
 //   - SEO minimo: title/description/canonical/JSON-LD WebPage basico
 //     (el SeoHead/JsonLd completos de Astro quedan para el build).
 
-import { createPageStore } from "@portaless/atomic-elements/store-factory";
+import { createPageStore } from "@portaless/visual-elements/store-factory";
 import { publicOriginFromEnv } from "../_shared/public-origin.js";
-import { validatePageLayout } from "@portaless/atomic-elements/page-schema";
-import { renderPage } from "@portaless/atomic-elements/render";
-import { projectPublicRevisionHistory } from "@portaless/atomic-elements/public-revision-history";
+import { validatePageLayout } from "@portaless/visual-elements/page-schema";
+import { renderPage } from "@portaless/visual-elements/render";
+import { projectPublicRevisionHistory } from "@portaless/visual-elements/public-revision-history";
 import { isPubliclyPublishable } from "@portaless/deploy-engine/draft-filter";
 import { SITE_LANG } from "../../src/lib/site-lang.ts";
 import { t } from "../../src/lib/i18n.ts";
@@ -39,9 +39,11 @@ import {
 } from "../../src/lib/atomic-responsive-icons.ts";
 import {
   BUILTIN_THEMES,
+  hasDualMode,
   resolveThemePack,
   themeStyleDecl,
-} from "@portaless/atomic-elements/themes";
+  themeStyleDeclForMode,
+} from "@portaless/visual-elements/themes";
 
 // M-11: Cloudflare Pages must be able to load this Function without a
 // top-level node:fs import. The filesystem is loaded lazily and every read
@@ -57,7 +59,7 @@ async function loadNodeFileSystem() {
     nodeFileSystem = {
       fs,
       globalCssPath: fileURLToPath(new URL("../../src/styles/global.css", import.meta.url)),
-      elementsCssPath: fileURLToPath(new URL("../../packages/atomic-elements/src/styles/elements.css", import.meta.url)),
+      elementsCssPath: fileURLToPath(new URL("../../packages/visual-elements/src/styles/elements.css", import.meta.url)),
       postsDir: fileURLToPath(new URL("../../src/content/posts", import.meta.url)),
     };
   } catch {
@@ -209,8 +211,14 @@ export function renderShell(layout, bodyHtml, request, { preview = false, revisi
   // orden en que este shell cargue global.css (el @media oscuro tiene
   // misma especificidad y vendria despues).
   const pageTheme = layout.theme ? resolveThemePack(BUILTIN_THEMES, layout.theme) : null;
-  const themeCss = pageTheme ? themeStyleDecl(pageTheme) : "";
+  const dual = pageTheme ? hasDualMode(pageTheme) : false;
+  const lightCss = pageTheme && dual ? themeStyleDeclForMode(pageTheme, "light") : "";
+  const darkCss = pageTheme && dual ? themeStyleDeclForMode(pageTheme, "dark") : "";
+  const themeCss = pageTheme ? (dual ? lightCss : themeStyleDecl(pageTheme)) : "";
   const themeAttr = pageTheme ? ` data-theme-pack="${esc(pageTheme.name)}"` : "";
+  const themeModesMeta = dual
+    ? `${lightCss ? `\n<meta name="portaless-theme-light" content="${esc(lightCss)}" />` : ""}${darkCss ? `\n<meta name="portaless-theme-dark" content="${esc(darkCss)}" />` : ""}`
+    : "";
   const themeStyleAttr = themeCss ? ` style="${esc(themeCss)}"` : "";
   const jsonLd = esc(JSON.stringify({
     "@context": "https://schema.org",
@@ -238,7 +246,7 @@ export function renderShell(layout, bodyHtml, request, { preview = false, revisi
 <html lang="${SITE_LANG}"${themeAttr}${themeStyleAttr}>
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />${themeModesMeta}
 <title>${title}</title>
 ${description ? `<meta name="description" content="${description}" />` : ""}
 ${discoveryMeta}

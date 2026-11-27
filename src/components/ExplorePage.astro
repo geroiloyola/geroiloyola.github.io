@@ -10,11 +10,11 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import { isPubliclyPublishable } from "@portaless/deploy-engine/draft-filter";
-import { ecosystemPageTheme } from "../lib/ecosystem-theme";
+import { ecosystemPageTheme, ecosystemPageThemeModes } from "../lib/ecosystem-theme";
 import { contentPageHref } from "../lib/routes";
 import { publishedPosts } from "../lib/llms-txt";
 import type { Locale } from "../lib/i18n";
-import type { ElementNode, PageLayout } from "@portaless/atomic-elements/types";
+import type { ElementNode, PageLayout } from "@portaless/visual-elements/types";
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -113,6 +113,7 @@ const profile = getSiteProfileConfig(process.env);
 const c = COPY[locale];
 const base = import.meta.env.BASE_URL;
 const pageTheme = ecosystemPageTheme();
+const pageThemeModes = ecosystemPageThemeModes();
 const homeLayout = loadHomeLayout(profile.id, locale === "es" && profile.features.esRoutes ? "es" : "en");
 
 const pages = loadContentPages(profile.id)
@@ -162,7 +163,7 @@ const shopsLabel = profile.isDemo ? c.chips.demoShops : c.chips.shops;
 const profilesLabel = profile.isDemo ? c.chips.demoProfiles : c.chips.profiles;
 ---
 
-<BaseLayout title={c.title} description={exploreDescription} pageTheme={pageTheme} lang={locale} alternatePath={profile.features.esRoutes ? "/explore/" : undefined}>
+<BaseLayout title={c.title} description={exploreDescription} pageTheme={pageTheme} pageThemeModes={pageThemeModes} lang={locale} alternatePath={profile.features.esRoutes ? "/explore/" : undefined}>
   <h1>{c.heading}</h1>
   <p class="explore-intro">{exploreIntro}</p>
 

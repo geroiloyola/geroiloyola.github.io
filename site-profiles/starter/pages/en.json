@@ -87,7 +87,8 @@
       "type": "FeatureGrid",
       "props": {
         "title": "",
-        "items": "server :: Portaless :: Modern Astro-based web CMS with strict CSP (zero unsafe-inline), native visual editor (Atomic Elements), SQLite/D1 persistence, and Node, Cloudflare Pages, or GitHub Pages deployment.\nshield :: Verared :: Open trust infrastructure, verifiable cryptographic identity (did:apw), Web Bot Auth, and Local Trust Protocol packages (@verared/* on npm).\npackage :: Gerarion :: [Editable] Dedicated space to explain the problem Gerarion solves, its core architecture, and how it connects with the rest of the ecosystem.\nbot :: Tokenless :: [Editable] Dedicated space to document Tokenless purpose, architecture, and practical real-world use cases."
+        "layout": "bento",
+        "items": "server :: Portaless :: Modern Astro-based web CMS with strict CSP (zero unsafe-inline), native visual editor (Visual Elements), ThemePack v2 dual-mode, SQLite/D1 persistence, and Node, Cloudflare Pages, or GitHub Pages deployment. :: span=2 :: featured\npackage :: Gerarion :: [Editable] Dedicated space to explain the problem Gerarion solves, its core architecture, and how it connects with the rest of the ecosystem.\nbot :: Tokenless :: [Editable] Dedicated space to document Tokenless purpose, architecture, and practical real-world use cases.\nshield :: Verared :: Open trust infrastructure, verifiable cryptographic identity (did:apw), Web Bot Auth, and Local Trust Protocol in 7 standalone packages (@verared/* on npm). :: span=2 :: featured"
       }
     },
     {
@@ -95,27 +96,35 @@
       "type": "Columns",
       "props": {
         "count": 2,
-        "gap": 16
+        "ratio": "2-1",
+        "gap": 20
       },
       "columnSlots": [
         [
           {
-            "id": "en-btn-eco-detail",
-            "type": "Button",
+            "id": "en-eco-summary",
+            "type": "Paragraph",
             "props": {
-              "label": "Read the full ecosystem breakdown",
-              "href": "/pages/en-ecosystem/",
-              "variant": "solid",
-              "size": "sm"
+              "text": "Every piece in the ecosystem enforces explicit boundaries, zero circular dependencies, and full portability: start free on GitHub Pages and move to Cloudflare Pages or Docker self-hosting without rewriting your content."
             }
           }
         ],
         [
           {
+            "id": "en-btn-eco-detail",
+            "type": "Button",
+            "props": {
+              "label": "Explore ecosystem →",
+              "href": "/pages/en-ecosystem/",
+              "variant": "solid",
+              "size": "sm"
+            }
+          },
+          {
             "id": "en-btn-portaless-guide",
             "type": "Button",
             "props": {
-              "label": "Portaless practical guide",
+              "label": "Portaless guide",
               "href": "/pages/en-portaless/",
               "variant": "outline",
               "size": "sm"
@@ -188,7 +197,7 @@
       "id": "en-contact-p",
       "type": "Paragraph",
       "props": {
-        "text": "This hub runs 100% on Portaless (starter profile + Atomic Elements blocks). Follow public ecosystem repositories on GitHub (github.com/geroiloyola) or edit this block whenever you want to publish official contact channels."
+        "text": "This hub runs 100% on Portaless (starter profile + Visual Elements blocks). Follow public ecosystem repositories on GitHub (github.com/geroiloyola) or edit this block whenever you want to publish official contact channels."
       }
     }
   ]

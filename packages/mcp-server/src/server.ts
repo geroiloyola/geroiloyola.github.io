@@ -7,7 +7,7 @@
 // Y conecta las tools -- ver createPortalessMcpServerDeps para lo que
 // index.ts debe resolver antes de llamar a createPortalessMcpServer().
 //
-// Identidad por invocacion (Opcion B, AGENT.md): deps.resolveAgent se
+// Identidad por invocacion (Opcion B, AGENTS.md): deps.resolveAgent se
 // ejecuta en CADA invocacion de tool -- sobre transporte HTTP resuelve
 // el bearer token de esa peticion contra McpAgentTokenStore (dos tokens
 // distintos = dos identidades con permisos y auditoria separados); sobre
@@ -16,9 +16,9 @@
 // archivo no distingue el transporte: solo propaga el resolver.
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { PageStore } from "@portaless/atomic-elements/page-store";
-import type { ResolvedCatalog } from "@portaless/atomic-elements/element-pack";
-import type { ThemePack } from "@portaless/atomic-elements/themes";
+import type { PageStore } from "@portaless/visual-elements/page-store";
+import type { ResolvedCatalog } from "@portaless/visual-elements/element-pack";
+import type { ThemePack } from "@portaless/visual-elements/themes";
 import type { PermissionStore } from "@portaless/permissions/store";
 import type { PluginRegistryStore } from "@portaless/plugin-sandbox/plugin-registry";
 import type { AuditLogStore } from "./audit/types";

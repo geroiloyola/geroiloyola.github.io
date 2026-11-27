@@ -2,7 +2,7 @@
 // color. Cubre: (1) DEFAULT_TOKENS = paleta oficial con accentText;
 // (2) TOKEN_TO_CSS_VAR incluye accentText; (3) base.json declara la misma
 // paleta oficial; (4) global.css aliasa --portaless-* a los tokens y
-// trae el dark mode oficial; (5) el renderHTML de atomic-elements usa
+// trae el dark mode oficial; (5) el renderHTML de visual-elements usa
 // var(--token, fallback) y ya no trae el hex de marca viejo; (6) los
 // skins derivados declaran accentText oscurecido (legible sobre fondo
 // claro).
@@ -16,7 +16,7 @@ import {
   TOKEN_TO_CSS_VAR,
   applyDesignTokens,
 } from "../../packages/dashboard/src/skin-engine/tokens";
-import { elementRegistry, elementPalette } from "../../packages/atomic-elements/src/elements/registry";
+import { elementRegistry, elementPalette } from "../../packages/visual-elements/src/elements/registry";
 import baseManifest from "../../packages/dashboard/src/skins/base.json";
 import blogManifest from "../../packages/dashboard/src/skins/blog.json";
 import tiendaManifest from "../../packages/dashboard/src/skins/tienda.json";
@@ -107,7 +107,7 @@ describe("global.css: aliases y dark mode", () => {
   });
 });
 
-describe("atomic-elements: renderHTML responde al skin", () => {
+describe("visual-elements: renderHTML responde al skin", () => {
   it("ningun renderer trae el hex de marca viejo", () => {
     for (const type of elementPalette) {
       const html = elementRegistry[type].renderHTML(
@@ -122,14 +122,18 @@ describe("atomic-elements: renderHTML responde al skin", () => {
 
   it("Button primario usa var(--accent, ...) de fondo y tinta #261C15 de texto", () => {
     const html = elementRegistry.Button.renderHTML({ label: "Ir", href: "#", style: "primary" } as never);
-    expect(html).toContain("background:var(--accent, #C5D86D)");
-    expect(html).toContain("color:#261C15");
+    expect(html).toContain('class="ae-btn ae-btn--solid ae-btn--md"');
+    const elementsCss = readFileSync("packages/visual-elements/src/styles/elements.css", "utf-8");
+    expect(elementsCss).toMatch(/\.ae-btn--solid\s*\{[^}]*background:\s*var\(--ve-btn-bg,\s*var\(--accent,\s*#C5D86D\)\)/);
+    expect(elementsCss).toMatch(/\.ae-btn--solid\s*\{[^}]*color:\s*var\(--ve-btn-fg,\s*#261C15\)/);
   });
 
   it("Button secundario usa --accent-text (contraste sobre fondo claro)", () => {
     const html = elementRegistry.Button.renderHTML({ label: "Ir", href: "#", style: "secondary" } as never);
-    expect(html).toContain("var(--accent-text, #5A6B24)");
-    expect(html).toContain("1px solid var(--accent, #C5D86D)");
+    expect(html).toContain('class="ae-btn ae-btn--outline ae-btn--md"');
+    const elementsCss = readFileSync("packages/visual-elements/src/styles/elements.css", "utf-8");
+    expect(elementsCss).toMatch(/\.ae-btn--outline\s*\{[^}]*color:\s*var\(--ve-btn-outline-fg,\s*var\(--accent-text,\s*#5A6B24\)\)/);
+    expect(elementsCss).toMatch(/\.ae-btn--outline\s*\{[^}]*border:\s*1px solid var\(--ve-btn-outline-border,\s*var\(--accent,\s*#C5D86D\)\)/);
   });
 
   it("LinkList solido replica el patron primary del Button", () => {
